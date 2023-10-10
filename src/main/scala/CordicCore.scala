@@ -20,57 +20,67 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
 
   val wordLen = mantissaBits + fractionBits
   val highBit = wordLen - 1
+  val nRepeats = {
+    var n = 0
+    for (i <- 0 until iterations) {
+      if (CordicConstants.hyperbolicRepeatIndices.contains(i)) {
+        n += 1
+      }
+    }
+    n
+  }
+  val totalIterations = iterations + nRepeats
+
   val inRegs  = RegEnable(io.in, io.in.valid)
-  io.out.valid  := false.B
-  io.out.bits.x := 0.U
-  io.out.bits.y := 0.U
-  io.out.bits.z := 0.U
 
-  val adders = Seq.fill(iterations)(Seq.fill(3)(Module(new AdderSubtractor(mantissaBits + fractionBits))))
+  val adders = Seq.fill(totalIterations)(Seq.fill(3)(Module(new AdderSubtractor(mantissaBits + fractionBits))))
 
-  val inWires      = Seq.fill(iterations)(Wire(CordicBundle(mantissaBits + fractionBits)))
-  val signExtWires = Seq.fill(iterations)(Wire(CordicBundle(mantissaBits + fractionBits)))
-  inWires(0) := inRegs.bits.cordic
+  val inWires      = Seq.fill(totalIterations)(Wire(chiselTypeOf(io.in)))
+  val outWires     = Seq.fill(totalIterations)(Wire(chiselTypeOf(io.in)))
+  val pipelineRegs = Seq.tabulate(totalIterations)(i => RegEnable(outWires(i), outWires(i).valid))
+  inWires(0) := inRegs
 
-  val pipelineRegs = Seq.fill(iterations)(Reg(CordicBundle(mantissaBits + fractionBits)))
+  val LUT = CordicLut(mantissaBits, fractionBits, totalIterations)
 
-  val LUT = CordicLut(mantissaBits, fractionBits, iterations)
+  for (i <- 0 until totalIterations) {
 
-  for (i <- 0 until iterations) {
-    // Shift and sign extend x, y, and z
-    signExtWires(i).x := (inWires(i).x >> i) | Cat(Mux(
-      inWires(i).x(highBit),
-      Fill(i, 1.U),
-      Fill(i, 0.U)
-    ), Fill(wordLen - i, 0.U)) 
-    signExtWires(i).y := (inWires(i).y >> i) | Cat(Mux(
-      inWires(i).y(highBit),
-      Fill(i, 1.U),
-      Fill(i, 0.U)
-    ), Fill(wordLen - i, 0.U))
-    signExtWires(i).z := (inWires(i).z >> i) | Cat(Mux(
-      inWires(i).z(highBit),
-      Fill(i, 1.U),
-      Fill(i, 0.U)
-    ), Fill(wordLen - i, 0.U))
+    if (i > 0) {
+      inWires(i) := pipelineRegs(i - 1)
+    }
 
+    val signExt = Wire(CordicBundle(mantissaBits + fractionBits))
+    val xSelect = ~(inWires(i).bits.control.m ^ inWires(i).bits.control.sigma)
+    val ySelect = ~inWires(i).bits.control.sigma
+    val zSelect = inWires(i).bits.control.sigma
 
-    // Add or subtract 
-    adders(i)(0).io.A := inWires(i).x
-    adders(i)(0).io.B := signExtWires(i).y
-    // adders(i)(0).io.D := TODO
-    adders(i)(1).io.A := inWires(i).y
-    adders(i)(1).io.B := signExtWires(i).x
-    // adders(i)(1).io.D := TODO
-    adders(i)(2).io.A := inWires(i).z
+    // Shift and sign extend x and y
+    signExt.x := inWires(i).bits.cordic.x >> i
+    signExt.y := inWires(i).bits.cordic.y >> i
+    signExt.z := 0.S
+
+    // Add or subtract
+    adders(i)(0).io.A := inWires(i).bits.cordic.x
+    adders(i)(0).io.B := signExt.y
+    adders(i)(0).io.D := xSelect
+    adders(i)(1).io.A := inWires(i).bits.cordic.y
+    adders(i)(1).io.B := signExt.x
+    adders(i)(1).io.D := ySelect
+    adders(i)(2).io.A := inWires(i).bits.cordic.z
     adders(i)(2).io.B := LUT.atanVals(i)
-    // adders(i)(2).io.D := TODO
+    adders(i)(2).io.D := zSelect
 
+    outWires(i).bits.cordic.x := adders(i)(0).io.S
+    outWires(i).bits.cordic.y := adders(i)(1).io.S
+    outWires(i).bits.cordic.z := adders(i)(2).io.S
+    outWires(i).bits.control  := inWires(i).bits.control
+    outWires(i).valid         := inWires(i).valid
   }
 
+  io.out.bits  := pipelineRegs(iterations - 1).bits.cordic
+  io.out.valid := pipelineRegs(iterations - 1).valid
 }
 
-object CordicCoreMain extends App {
+object CordicCore extends App {
 
   // These lines generate the Verilog output
   (new ChiselStage).execute(

@@ -15,10 +15,14 @@ object TrigonometricOp extends ChiselEnum {
   val LOG         = Value(7.U)
 }
 
+object CordicConstants {
+  val hyperbolicRepeatIndices = Seq(4, 13, 40)
+}
+
 case class CordicBundle(dataWidth: Int) extends Bundle {
-  val x = UInt(dataWidth.W)
-  val y = UInt(dataWidth.W)
-  val z = UInt(dataWidth.W)
+  val x = SInt(dataWidth.W)
+  val y = SInt(dataWidth.W)
+  val z = SInt(dataWidth.W)
 }
 
 case class CordicCoreControl() extends Bundle {
@@ -37,7 +41,7 @@ object CordicMethods {
     (integer, value - integer)
   }
 
-  def toFixedPoint(value: Double, mantissaBits: Int, fractionBits: Int): UInt = {
+  def toFixedPoint(value: Double, mantissaBits: Int, fractionBits: Int): SInt = {
     val (integerSigned, frac) = modf(value)
     val sign                  = value < 0
     val integer               = abs(integerSigned)
@@ -46,7 +50,7 @@ object CordicMethods {
     if (sign) {
       bits = bits * -1
     }
-    bits.U
+    bits.S
   }
 
 }
