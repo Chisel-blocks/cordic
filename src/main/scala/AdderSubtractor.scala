@@ -1,13 +1,14 @@
 package accelerators
 
 import chisel3._
-import chisel3.util._
+import circt.stage.{ChiselStage, FirtoolOption}
+import chisel3.stage.ChiselGeneratorAnnotation
 
 case class AdderSubtractorIO(bits: Int) extends Bundle {
-  val A = Input(UInt(bits.W))
-  val B = Input(UInt(bits.W))
+  val A = Input(SInt(bits.W))
+  val B = Input(SInt(bits.W))
   val D = Input(Bool())
-  val S = Output(UInt(bits.W))
+  val S = Output(SInt(bits.W))
 }
 
 /** Adder Subtractor combinatorial module. 
@@ -23,16 +24,24 @@ case class AdderSubtractorIO(bits: Int) extends Bundle {
   */
 class AdderSubtractor(bits: Int) extends Module {
   val io    = IO(AdderSubtractorIO(bits))
-  val S_vec = Vec(bits, UInt(1.W))
-  val C_vec = Vec(bits + 1, UInt(1.W))
+  val S_vec = Wire(Vec(bits, UInt(1.W)))
+  val C_vec = Wire(Vec(bits + 1, UInt(1.W)))
 
   C_vec(0) := io.D
 
   for (i <- (0 until bits)) {
     val b = io.B(i) ^ io.D
     S_vec(i)     := b ^ io.A(i) ^ C_vec(i)
-    C_vec(i + 1) := (b & io.A(i)) | (C_vec(i) ^ io.A(i))
+    C_vec(i + 1) := (b & io.A(i)) | (C_vec(i) & (b ^ io.A(i)))
   }
 
-  io.S := S_vec.asUInt
+  io.S := S_vec.asTypeOf(SInt(bits.W))
+}
+
+object AdderSubtractor extends App {
+  // These lines generate the Verilog output
+  (new ChiselStage).execute(
+    { Array("--target", "systemverilog") ++ args },
+    Seq(ChiselGeneratorAnnotation(() => new AdderSubtractor(16)), FirtoolOption("--disable-all-randomization"))
+  )
 }
