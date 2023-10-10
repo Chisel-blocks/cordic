@@ -25,13 +25,23 @@ case class CordicBundle(dataWidth: Int) extends Bundle {
   val z = SInt(dataWidth.W)
 }
 
+object CordicMode extends ChiselEnum {
+  val ROTATION  = Value(0.U)
+  val VECTORING = Value(1.U)
+}
+
+object CordicRotationType extends ChiselEnum {
+  val CIRCULAR   = Value(0.U)
+  val HYPERBOLIC = Value(1.U)
+}
+
 case class CordicCoreControl() extends Bundle {
 
   /** circular/hyperbolic */
-  val m = UInt(1.W)
+  val rotType = CordicRotationType()
 
   /** rotation/vectoring */
-  val sigma = UInt(1.W)
+  val mode = CordicMode()
 }
 
 object CordicMethods {

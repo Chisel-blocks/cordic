@@ -20,6 +20,7 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
 
   val wordLen = mantissaBits + fractionBits
   val highBit = wordLen - 1
+
   val nRepeats = {
     var n = 0
     for (i <- 0 until iterations) {
@@ -29,9 +30,10 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
     }
     n
   }
+
   val totalIterations = iterations + nRepeats
 
-  val inRegs  = RegEnable(io.in, io.in.valid)
+  val inRegs = RegEnable(io.in, io.in.valid)
 
   val adders = Seq.fill(totalIterations)(Seq.fill(3)(Module(new AdderSubtractor(mantissaBits + fractionBits))))
 
@@ -43,9 +45,23 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
   val LUT = CordicLut(mantissaBits, fractionBits, totalIterations)
 
   var repeats = 0
-  var repeat = false
+  var repeat  = false
+
   for (i <- 0 until totalIterations) {
 
+    val m     = Wire(Bool())
+    val sigma = Wire(Bool())
+    when(inWires(i).bits.control.mode === CordicMode.ROTATION) {
+      sigma := inWires(i).bits.cordic.z >= 0.S
+    }.otherwise { // VECTORING
+      sigma := inWires(i).bits.cordic.y < 0.S
+    }
+
+    when(inWires(i).bits.control.rotType === CordicRotationType.CIRCULAR) {
+      m := true.B
+    }.otherwise { // HYPERBOLIC
+      m := false.B
+    }
 
     if (i > 0) {
       inWires(i) := pipelineRegs(i - 1)
@@ -60,16 +76,15 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
 
     val bypass = WireDefault(false.B)
     if (i == 0) {
-      when (inWires(i).bits.control.m === 0.U) {
+      when(m === 0.U) {
         bypass := true.B
       }
     }
 
-
     val signExt = Wire(CordicBundle(mantissaBits + fractionBits))
-    val xSelect = ~(inWires(i).bits.control.m ^ inWires(i).bits.control.sigma)
-    val ySelect = ~inWires(i).bits.control.sigma
-    val zSelect = inWires(i).bits.control.sigma
+    val xSelect = ~(m ^ sigma)
+    val ySelect = ~sigma
+    val zSelect = sigma
 
     // Shift and sign extend x and y
     signExt.x := inWires(i).bits.cordic.x >> i
@@ -84,12 +99,12 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
     adders(i)(1).io.B := signExt.x
     adders(i)(1).io.D := ySelect
     adders(i)(2).io.A := inWires(i).bits.cordic.z
-    adders(i)(2).io.B := LUT.atanVals(i)
+    adders(i)(2).io.B := Mux(m.asBool, LUT.atanVals(i), LUT.atanhVals(i))
     adders(i)(2).io.D := zSelect
 
-    when (bypass) {
+    when(bypass) {
       outWires(i) := inWires(i)
-    } .otherwise {
+    }.otherwise {
       outWires(i).bits.cordic.x := adders(i)(0).io.S
       outWires(i).bits.cordic.y := adders(i)(1).io.S
       outWires(i).bits.cordic.z := adders(i)(2).io.S
