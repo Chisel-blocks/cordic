@@ -2,6 +2,7 @@ package accelerators
 
 import chisel3._
 import chisel3.util._
+import scala.math.{atan, abs, floor, log, pow}
 
 object TrigonometricOp extends ChiselEnum {
   val SINE        = Value(0.U)
@@ -21,6 +22,47 @@ case class CordicBundle(dataWidth: Int) extends Bundle {
 }
 
 case class CordicCoreControl() extends Bundle {
-  val m     = UInt(1.W)
+
+  /** circular/hyperbolic */
+  val m = UInt(1.W)
+
+  /** rotation/vectoring */
   val sigma = UInt(1.W)
+}
+
+object CordicMethods {
+
+  def modf(value: Double): (Int, Double) = {
+    val integer = value.toInt
+    (integer, value - integer)
+  }
+
+  def toFixedPoint(value: Double, mantissaBits: Int, fractionBits: Int): UInt = {
+    val (integerSigned, frac) = modf(value)
+    val sign                  = value < 0
+    val integer               = abs(integerSigned)
+    val fracBits              = floor((1 << fractionBits) * abs(frac)).toInt
+    var bits                  = (integer << fractionBits) | fracBits
+    if (sign) {
+      bits = bits * -1
+    }
+    bits.U
+  }
+
+}
+
+case class CordicLut(mantissaBits: Int, fractionBits: Int, iterations: Int) {
+
+  def atanh(x: Double): Double = {
+    0.5 * log((1 + x) / (1 - x))
+  }
+
+  val atanVals = Seq.tabulate(iterations)(i =>
+    CordicMethods.toFixedPoint(atan(pow(2, -i)), mantissaBits, fractionBits)
+  )
+
+  val atanhVals = Seq.tabulate(iterations)(i =>
+    CordicMethods.toFixedPoint(atanh(pow(2, -i)), mantissaBits, fractionBits)
+  )
+
 }
