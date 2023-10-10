@@ -42,7 +42,7 @@ SCALAPATH=${ROOTPATH}/src/main/scala
 FIRRTL_JAR="$ROOTPATH/rocket-chip/firrtl/utils/bin/firrtl.jar"
 
 VPATHDIRS=`find ${SCALAPATH}/* -type d -exec basename '{}' ';'`
-MODULES="CordicAccelerator AdderSubtractor"
+MODULES="CordicAccelerator CordicCore AdderSubtractor"
 TEST_MODULES=""
 PACKAGE="accelerators"
 
