@@ -42,11 +42,29 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
 
   val LUT = CordicLut(mantissaBits, fractionBits, totalIterations)
 
+  var repeats = 0
+  var repeat = false
   for (i <- 0 until totalIterations) {
+
 
     if (i > 0) {
       inWires(i) := pipelineRegs(i - 1)
     }
+
+    if (CordicConstants.hyperbolicRepeatIndices.contains(i - repeats) && !repeat) {
+      repeat = true
+      repeats += 1
+    } else {
+      repeat = false
+    }
+
+    val bypass = WireDefault(false.B)
+    if (i == 0) {
+      when (inWires(i).bits.control.m === 0.U) {
+        bypass := true.B
+      }
+    }
+
 
     val signExt = Wire(CordicBundle(mantissaBits + fractionBits))
     val xSelect = ~(inWires(i).bits.control.m ^ inWires(i).bits.control.sigma)
@@ -69,11 +87,15 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
     adders(i)(2).io.B := LUT.atanVals(i)
     adders(i)(2).io.D := zSelect
 
-    outWires(i).bits.cordic.x := adders(i)(0).io.S
-    outWires(i).bits.cordic.y := adders(i)(1).io.S
-    outWires(i).bits.cordic.z := adders(i)(2).io.S
-    outWires(i).bits.control  := inWires(i).bits.control
-    outWires(i).valid         := inWires(i).valid
+    when (bypass) {
+      outWires(i) := inWires(i)
+    } .otherwise {
+      outWires(i).bits.cordic.x := adders(i)(0).io.S
+      outWires(i).bits.cordic.y := adders(i)(1).io.S
+      outWires(i).bits.cordic.z := adders(i)(2).io.S
+      outWires(i).bits.control  := inWires(i).bits.control
+      outWires(i).valid         := inWires(i).valid
+    }
   }
 
   io.out.bits  := pipelineRegs(iterations - 1).bits.cordic
