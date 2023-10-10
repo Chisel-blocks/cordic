@@ -23,3 +23,4 @@ src/test/cocotb/gpio/sim_build/*
 !src/test/cocotb/**/Makefile
 **/SoftFloat-3e/**
 **/TestFloat-3e/**
+**/sim_build
