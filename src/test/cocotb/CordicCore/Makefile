@@ -18,7 +18,7 @@ MODULE = test_$(TOPLEVEL)
 include $(shell cocotb-config --makefiles)/Makefile.sim
 
 %.sv:
-	cd $(PWD)/../../../.. && $(MAKE) $(TOPLEVEL)
+	cd $(PWD)/../../../.. && ./configure && $(MAKE) $(TOPLEVEL)
 
 clean_vlog:
 	rm $(VERILOG_SOURCES)
