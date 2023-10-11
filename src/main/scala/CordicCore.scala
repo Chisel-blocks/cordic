@@ -120,8 +120,8 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
     }
   }
 
-  io.out.bits  := pipelineRegs(iterations - 1).bits.cordic
-  io.out.valid := pipelineRegs(iterations - 1).valid
+  io.out.bits  := pipelineRegs(totalIterations - 1).bits.cordic
+  io.out.valid := pipelineRegs(totalIterations - 1).valid
 }
 
 object CordicCore extends App {
