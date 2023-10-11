@@ -13,7 +13,7 @@ case class CordicAcceleratorIO(dataWidth: Int) extends Bundle {
   val dataOut = Output(UInt(dataWidth.W))
 }
 
-class CordicAccelerator(mantissaBits: Int, fractionBits: Int) extends Module {
+class CordicAccelerator(val mantissaBits: Int, val fractionBits: Int, val iterations: Int, opList: Seq[CordicOp])
+    extends Module with CordicInfo {
   val io = CordicAcceleratorIO(dataWidth = mantissaBits + fractionBits)
 }
-

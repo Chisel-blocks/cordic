@@ -2,7 +2,7 @@ package accelerators
 
 import chisel3._
 import chisel3.util._
-import scala.math.{atan, abs, floor, log, pow}
+import scala.math.{atan, abs, floor, log, pow, sqrt}
 
 object TrigonometricOp extends ChiselEnum {
   val SINE        = Value(0.U)
@@ -63,6 +63,20 @@ object CordicMethods {
     bits.S
   }
 
+  def calcK(iterations: Int, rotationType: CordicRotationType.Type): Double = {
+    val iInit = {if (rotationType == CordicRotationType.CIRCULAR) 0 else 1}   
+    var k = 1.0
+    for (i <- iInit until iterations) {
+      val sqrtee = {
+        if (rotationType == CordicRotationType.CIRCULAR) 1 + pow(2, -2 * i)
+        else 1 - pow(2, -2 * i)
+      }
+      k *= sqrt(sqrtee)
+      if (CordicConstants.hyperbolicRepeatIndices.contains(i))
+        k *= sqrt(sqrtee)
+    }
+    0.0
+  }
 }
 
 case class CordicLut(mantissaBits: Int, fractionBits: Int, iterations: Int) {
