@@ -51,6 +51,9 @@ case class CordicCoreControl() extends Bundle {
   /** rotation/vectoring */
   val mode = CordicMode()
 
+  /** Operation code */
+  val op = UInt(5.W)
+
   /** Cordic operation specific controls for x */
   val xOpSpecific = UInt(4.W)
 

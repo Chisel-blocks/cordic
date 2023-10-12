@@ -15,7 +15,7 @@ case class CordicPreprocessorIO(dataWidth: Int, nOps: Int) extends Bundle {
     val rs1 = Input(SInt(dataWidth.W))
     val rs2 = Input(SInt(dataWidth.W))
     val rs3 = Input(SInt(dataWidth.W))
-    val op  = Input(UInt(log2Ceil(nOps).W))
+    val op  = Input(UInt(5.W))
   }
 
   val out = new Bundle {
@@ -61,6 +61,7 @@ class CordicPreprocessor(val mantissaBits: Int, val fractionBits: Int, val itera
 
   io.out.control.mode    := modeVec(io.in.op)
   io.out.control.rotType := typeVec(io.in.op)
+  io.out.control.op      := io.in.op
 
 }
 

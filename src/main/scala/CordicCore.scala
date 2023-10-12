@@ -12,7 +12,11 @@ case class CordicCoreIO(dataWidth: Int) extends Bundle {
     val control = CordicCoreControl()
   }))
 
-  val out = Output(ValidIO(CordicBundle(dataWidth)))
+  val out = Output(ValidIO(new Bundle {
+    val cordic  = CordicBundle(dataWidth)
+    val control = CordicCoreControl()
+  }))
+
 }
 
 class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends Module {
@@ -44,10 +48,10 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
 
   val LUT = CordicLut(mantissaBits, fractionBits, totalIterations)
 
-  var repeats = 0
-  var repeat  = false
+  var repeats  = 0
+  var repeat   = false
   var shiftIdx = 0
-  var lutIdx = 0
+  var lutIdx   = 0
 
   for (i <- 0 until totalIterations) {
 
@@ -120,8 +124,7 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
     }
   }
 
-  io.out.bits  := pipelineRegs(totalIterations - 1).bits.cordic
-  io.out.valid := pipelineRegs(totalIterations - 1).valid
+  io.out := pipelineRegs(totalIterations - 1)
 }
 
 object CordicCore extends App {

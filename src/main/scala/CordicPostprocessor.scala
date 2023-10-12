@@ -9,12 +9,11 @@ import chisel3.util.{MuxCase, log2Ceil}
 import circt.stage.{ChiselStage, FirtoolOption}
 import chisel3.stage.ChiselGeneratorAnnotation
 
-case class CordicPostprocessorIO(dataWidth: Int, nOps: Int) extends Bundle {
+case class CordicPostprocessorIO(dataWidth: Int) extends Bundle {
 
   val in = new Bundle {
     val cordic = Input(CordicBundle(dataWidth))
     val control = Input(CordicCoreControl())
-    val op  = Input(UInt(log2Ceil(nOps).W))
   }
 
   val out = new Bundle {
@@ -25,14 +24,14 @@ case class CordicPostprocessorIO(dataWidth: Int, nOps: Int) extends Bundle {
 
 class CordicPostprocessor(val mantissaBits: Int, val fractionBits: Int, val iterations: Int, opList: Seq[CordicOp])
     extends Module {
-  val io = IO(CordicPostprocessorIO(dataWidth = mantissaBits + fractionBits, opList.length))
+  val io = IO(CordicPostprocessorIO(dataWidth = mantissaBits + fractionBits))
 
   val opListLength = opList.length
 
   io.out.dOut := 0.S
 
   for (i <- 0 until opListLength) {
-    when(io.in.op === i.U) {
+    when(io.in.control.op === i.U) {
       val xPostProcess = opList(i).xPostProcess(io.in.cordic.x, io.in.control.xOpSpecific)
       val yPostProcess = opList(i).yPostProcess(io.in.cordic.y, io.in.control.yOpSpecific)
       val zPostProcess = opList(i).zPostProcess(io.in.cordic.z, io.in.control.zOpSpecific)
@@ -61,7 +60,8 @@ object CordicPostprocessor extends App {
           12,
           14,
           Seq(
-            CordicSine(4, 12, 14)
+            CordicSine(4, 12, 14),
+            CordicCosine(4, 12, 14),
           )
         )
       ),
