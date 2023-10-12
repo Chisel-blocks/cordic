@@ -9,11 +9,11 @@ import chisel3.util.{ValidIO, log2Ceil}
 import circt.stage.{ChiselStage, FirtoolOption}
 import chisel3.stage.ChiselGeneratorAnnotation
 
-case class CordicAcceleratorIO(dataWidth: Int, nOps: Int) extends Bundle {
+case class CordicAcceleratorIO(dataWidth: Int) extends Bundle {
 
   val in = Input(ValidIO(new Bundle {
     val dataIn = SInt(dataWidth.W)
-    val op     = UInt(log2Ceil(nOps).W)
+    val op     = UInt(5.W)
   }))
 
   val out = Output(ValidIO(new Bundle {
@@ -24,7 +24,7 @@ case class CordicAcceleratorIO(dataWidth: Int, nOps: Int) extends Bundle {
 
 class CordicAccelerator(val mantissaBits: Int, val fractionBits: Int, val iterations: Int, opList: Seq[CordicOp])
     extends Module {
-  val io = IO(CordicAcceleratorIO(mantissaBits + fractionBits, opList.length))
+  val io = IO(CordicAcceleratorIO(mantissaBits + fractionBits))
 
   val preprocessor  = Module(new CordicPreprocessor(mantissaBits, fractionBits, iterations, opList))
   val postprocessor = Module(new CordicPostprocessor(mantissaBits, fractionBits, iterations, opList))
@@ -52,16 +52,26 @@ object CordicAccelerator extends App {
   (new circt.stage.ChiselStage).execute(
     { Array("--target", "systemverilog") ++ args },
     Seq(
-      ChiselGeneratorAnnotation(() =>
+      ChiselGeneratorAnnotation(() => {
+        val mantissaBits = 4
+        val fractionBits = 12
+        val iterations   = 14
         new CordicAccelerator(
-          4,
-          12,
-          14,
+          mantissaBits,
+          fractionBits,
+          iterations,
           Seq(
-            CordicSine(4, 12, 14),
-            CordicCosine(4, 12, 14),
+            CordicSine(mantissaBits, fractionBits, iterations),
+            CordicCosine(mantissaBits, fractionBits, iterations),
+            CordicArctan(mantissaBits, fractionBits, iterations),
+            CordicSinh(mantissaBits, fractionBits, iterations),
+            CordicCosh(mantissaBits, fractionBits, iterations),
+            CordicArctanh(mantissaBits, fractionBits, iterations),
+            CordicExponential(mantissaBits, fractionBits, iterations),
+            CordicLog(mantissaBits, fractionBits, iterations)
           )
         )
+      }
       ),
       FirtoolOption("--disable-all-randomization")
     )
