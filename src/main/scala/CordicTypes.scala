@@ -35,6 +35,14 @@ object CordicRotationType extends ChiselEnum {
   val HYPERBOLIC = Value(1.U)
 }
 
+object CordicRegister extends ChiselEnum {
+  val rs1, rs2, rs3 = Value
+}
+
+object CordicResultRegister extends ChiselEnum {
+  val x, y, z = Value
+}
+
 case class CordicCoreControl() extends Bundle {
 
   /** circular/hyperbolic */
@@ -42,6 +50,15 @@ case class CordicCoreControl() extends Bundle {
 
   /** rotation/vectoring */
   val mode = CordicMode()
+
+  /** Cordic operation specific controls for x */
+  val xOpSpecific = UInt(4.W)
+
+  /** Cordic operation specific controls for y */
+  val yOpSpecific = UInt(4.W)
+
+  /** Cordic operation specific controls for z */
+  val zOpSpecific = UInt(4.W)
 }
 
 object CordicMethods {
@@ -64,8 +81,8 @@ object CordicMethods {
   }
 
   def calcK(iterations: Int, rotationType: CordicRotationType.Type): Double = {
-    val iInit = {if (rotationType == CordicRotationType.CIRCULAR) 0 else 1}   
-    var k = 1.0
+    val iInit = { if (rotationType == CordicRotationType.CIRCULAR) 0 else 1 }
+    var k     = 1.0
     for (i <- iInit until iterations) {
       val sqrtee = {
         if (rotationType == CordicRotationType.CIRCULAR) 1 + pow(2, -2 * i)
@@ -77,6 +94,24 @@ object CordicMethods {
     }
     k
   }
+
+}
+
+case class CordicConstants(mantissaBits: Int, fractionBits: Int, iterations: Int) {
+
+  val K =
+    CordicMethods.toFixedPoint(CordicMethods.calcK(iterations, CordicRotationType.CIRCULAR), mantissaBits, fractionBits)
+
+  val Kh = CordicMethods.toFixedPoint(
+    CordicMethods.calcK(iterations, CordicRotationType.HYPERBOLIC),
+    mantissaBits,
+    fractionBits
+  )
+
+  val pPi      = CordicMethods.toFixedPoint(math.Pi, mantissaBits, fractionBits)
+  val pPiOver2 = CordicMethods.toFixedPoint(math.Pi / 2, mantissaBits, fractionBits)
+  val nPiOver2 = CordicMethods.toFixedPoint(-math.Pi / 2, mantissaBits, fractionBits)
+
 }
 
 case class CordicLut(mantissaBits: Int, fractionBits: Int, iterations: Int) {
