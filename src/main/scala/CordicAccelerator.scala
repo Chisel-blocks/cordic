@@ -14,6 +14,6 @@ case class CordicAcceleratorIO(dataWidth: Int) extends Bundle {
 }
 
 class CordicAccelerator(val mantissaBits: Int, val fractionBits: Int, val iterations: Int, opList: Seq[CordicOp])
-    extends Module with CordicInfo {
+    extends Module {
   val io = CordicAcceleratorIO(dataWidth = mantissaBits + fractionBits)
 }

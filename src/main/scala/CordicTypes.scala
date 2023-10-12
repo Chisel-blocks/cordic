@@ -75,7 +75,7 @@ object CordicMethods {
       if (CordicConstants.hyperbolicRepeatIndices.contains(i))
         k *= sqrt(sqrtee)
     }
-    0.0
+    k
   }
 }
 
