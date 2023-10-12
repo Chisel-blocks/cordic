@@ -12,7 +12,7 @@ resolvers += "A-Core Gitlab" at "https://gitlab.com/api/v4/groups/13348068/-/pac
 
 lazy val CordicAccelerator = (project in file("."))
   .settings(
-    name := "acorebase",
+    name := "CordicAccelerator",
     libraryDependencies ++= Seq(
       "org.chipsalliance" %% "chisel" % chiselVersion,
     ),
