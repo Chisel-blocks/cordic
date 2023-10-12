@@ -38,7 +38,7 @@ class CordicAccelerator(val mantissaBits: Int, val fractionBits: Int, val iterat
   cordicCore.io.in.bits  := preprocessor.io.out
   cordicCore.io.in.valid := io.in.valid
 
-  postprocessor.io.in.cordic := cordicCore.io.out.bits.cordic
+  postprocessor.io.in.cordic  := cordicCore.io.out.bits.cordic
   postprocessor.io.in.control := cordicCore.io.out.bits.control
 
   io.out.bits.dataOut := postprocessor.io.out.dOut
@@ -71,8 +71,7 @@ object CordicAccelerator extends App {
             CordicLog(mantissaBits, fractionBits, iterations)
           )
         )
-      }
-      ),
+      }),
       FirtoolOption("--disable-all-randomization")
     )
   )
