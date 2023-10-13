@@ -15,6 +15,7 @@ lazy val CordicAccelerator = (project in file("."))
     name := "CordicAccelerator",
     libraryDependencies ++= Seq(
       "org.chipsalliance" %% "chisel" % chiselVersion,
+      "com.github.scopt" %% "scopt" % "4.1.0"
     ),
     scalacOptions ++= Seq(
       "-language:reflectiveCalls",

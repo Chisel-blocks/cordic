@@ -70,6 +70,16 @@ TEST_TARGETS = \$(foreach name,\$(TEST_MODULES), test_\$(name))
 #Commands
 SBT=sbt -J-Xmx16G -J-Xss8M
 
+# Default parameters
+# Cordic ops have to be separated by a comma
+cordic_ops ?= Sine,Cosine
+mantissa_bits ?= 4
+fraction_bits ?= 12
+iterations   ?= 14
+
+MAINPARAMS = -c \$(cordic_ops) -m \$(mantissa_bits) -f \$(fraction_bits) -i \$(iterations)
+
+
 TOUCH=touch -r
 `for i in ${VPATHDIRS}; do
     echo vpath %.scala \\$\(SCALAPATH\)/$i
@@ -95,7 +105,7 @@ echo "'"
 
     echo -e ".PHONY: \\$(VERILOGDIR)/$i.v"
     echo -e "\\$(VERILOGDIR)/$i.v:"
-    echo -e "\t\\$(SBT) 'runMain accelerators.$i \\$(MAINPARAMS) -td \\$(VERILOGDIR)'"
+    echo -e "\t\\$(SBT) 'runMain accelerators.$i \\$(MAINPARAMS) -t \\$(VERILOGDIR)'"
 done`
 
 # Test recipes for all test modules
