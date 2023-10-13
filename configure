@@ -42,6 +42,7 @@ SCALAPATH=${ROOTPATH}/src/main/scala
 FIRRTL_JAR="$ROOTPATH/rocket-chip/firrtl/utils/bin/firrtl.jar"
 
 VPATHDIRS=`find ${SCALAPATH}/* -type d -exec basename '{}' ';'`
+MAINMODULE="CordicAccelerator"
 MODULES="CordicAccelerator CordicCore AdderSubtractor CordicPreprocessor CordicPostprocessor"
 TEST_MODULES=""
 PACKAGE="accelerators"
@@ -99,12 +100,14 @@ done
 echo "'"
 `
 
+${MAINMODULE}: \$(VERILOGDIR)/$i.v
+	\$(SBT) 'runMain ${PACKAGE}.$i \$(MAINPARAMS) -t \$(VERILOGDIR)'
+
 # Recipes for individual modules
 `for i in ${MODULES}; do
-    echo -e "$i: \\$(VERILOGDIR)/$i.v"
-
-    echo -e "\\$(VERILOGDIR)/$i.v:"
-    echo -e "\t\\$(SBT) 'runMain accelerators.$i \\$(MAINPARAMS) -t \\$(VERILOGDIR)'"
+	echo -e "$i: \\$(VERILOGDIR)/$i.v"
+	echo -e "\\$(VERILOGDIR)/$i.v:"
+	echo -e "\t\\$(SBT) 'runMain ${PACKAGE}.$i -td \\$(VERILOGDIR)'"
 done`
 
 # Test recipes for all test modules
