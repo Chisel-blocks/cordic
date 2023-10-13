@@ -54,7 +54,7 @@ for i in ${MODULES}; do
 done
 cat <<EOF > ${CURRENTFILE}
 #Directories
-VERILOGDIR = ${VERILOGDIR}
+VERILOGDIR ?= ${VERILOGDIR}
 VERILOGPATH = ${VERILOGPATH}
 SCALAPATH = ${SCALAPATH}
 #DEPDIR :=.depdir
@@ -84,7 +84,7 @@ TOUCH=touch -r
 `for i in ${VPATHDIRS}; do
     echo vpath %.scala \\$\(SCALAPATH\)/$i
 done`
-.PHONY: all test help doc clean \$(MODULES)
+.PHONY: all test help doc clean
 
 all: \$(TARGETS)
 
@@ -103,7 +103,6 @@ echo "'"
 `for i in ${MODULES}; do
     echo -e "$i: \\$(VERILOGDIR)/$i.v"
 
-    echo -e ".PHONY: \\$(VERILOGDIR)/$i.v"
     echo -e "\\$(VERILOGDIR)/$i.v:"
     echo -e "\t\\$(SBT) 'runMain accelerators.$i \\$(MAINPARAMS) -t \\$(VERILOGDIR)'"
 done`
