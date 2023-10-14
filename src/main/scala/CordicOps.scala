@@ -129,7 +129,7 @@ case class CordicSine(mantissaBits: Int, fractionBits: Int, iterations: Int)
 
   override def zPreProcess(rs1: SInt, rs2: SInt, rs3: SInt): (SInt, UInt) = {
     val largerThanPiOver2     = rs1 > consts.pPiOver2
-    val smallerThanNegPiOver2 = rs2 < consts.nPiOver2
+    val smallerThanNegPiOver2 = rs1 < consts.nPiOver2
     val retWire =
       MuxCase(rs1, Seq(largerThanPiOver2 -> { rs1 - consts.pPi }, smallerThanNegPiOver2 -> { rs1 + consts.pPi }))
     (retWire, Cat(largerThanPiOver2, smallerThanNegPiOver2))
