@@ -43,13 +43,14 @@ FIRRTL_JAR="$ROOTPATH/rocket-chip/firrtl/utils/bin/firrtl.jar"
 
 VPATHDIRS=`find ${SCALAPATH}/* -type d -exec basename '{}' ';'`
 MAINMODULE="CordicAccelerator"
-MODULES="CordicAccelerator CordicCore AdderSubtractor CordicPreprocessor CordicPostprocessor"
+MODULES="CordicCore AdderSubtractor CordicPreprocessor CordicPostprocessor"
 TEST_MODULES=""
 PACKAGE="accelerators"
 
 ############################# MAKEFILE   ####################################
 CURRENTFILE="${ROOTPATH}/Makefile"
 echo "Creating ${CURRENTFILE} for modules:"
+echo "- ${MAINMODULE}"
 for i in ${MODULES}; do
     echo "- $i"
 done
@@ -100,8 +101,10 @@ done
 echo "'"
 `
 
-${MAINMODULE}: \$(VERILOGDIR)/$i.v
-	\$(SBT) 'runMain ${PACKAGE}.$i \$(MAINPARAMS) -t \$(VERILOGDIR)'
+
+${MAINMODULE}: \$(VERILOGDIR)/${MAINMODULE}.v
+\$(VERILOGDIR)/${MAINMODULE}.v:
+	\$(SBT) 'runMain ${PACKAGE}.${MAINMODULE} \$(MAINPARAMS) -t \$(VERILOGDIR)'
 
 # Recipes for individual modules
 `for i in ${MODULES}; do
