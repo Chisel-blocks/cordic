@@ -14,7 +14,9 @@ import java.io.File
 case class CordicAcceleratorIO(dataWidth: Int) extends Bundle {
 
   val in = Input(ValidIO(new Bundle {
-    val dataIn = SInt(dataWidth.W)
+    val rs1 = SInt(dataWidth.W)
+    val rs2 = SInt(dataWidth.W)
+    val rs3 = SInt(dataWidth.W)
     val op     = UInt(5.W)
   }))
 
@@ -32,9 +34,9 @@ class CordicAccelerator(val mantissaBits: Int, val fractionBits: Int, val iterat
   val postprocessor = Module(new CordicPostprocessor(mantissaBits, fractionBits, iterations, opList))
   val cordicCore    = Module(new CordicCore(mantissaBits, fractionBits, iterations))
 
-  preprocessor.io.in.rs1 := io.in.bits.dataIn
-  preprocessor.io.in.rs2 := 0.S
-  preprocessor.io.in.rs3 := 0.S
+  preprocessor.io.in.rs1 := io.in.bits.rs1
+  preprocessor.io.in.rs2 := io.in.bits.rs2
+  preprocessor.io.in.rs3 := io.in.bits.rs3
   preprocessor.io.in.op  := io.in.bits.op
 
   cordicCore.io.in.bits  := preprocessor.io.out
