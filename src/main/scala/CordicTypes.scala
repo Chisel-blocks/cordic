@@ -103,10 +103,14 @@ object CordicMethods {
 case class CordicConstants(mantissaBits: Int, fractionBits: Int, iterations: Int) {
 
   val K =
-    CordicMethods.toFixedPoint(CordicMethods.calcK(iterations, CordicRotationType.CIRCULAR), mantissaBits, fractionBits)
+    CordicMethods.toFixedPoint(
+      1.0 / CordicMethods.calcK(iterations, CordicRotationType.CIRCULAR),
+      mantissaBits,
+      fractionBits
+    )
 
   val Kh = CordicMethods.toFixedPoint(
-    CordicMethods.calcK(iterations, CordicRotationType.HYPERBOLIC),
+    1.0 / CordicMethods.calcK(iterations, CordicRotationType.HYPERBOLIC),
     mantissaBits,
     fractionBits
   )
