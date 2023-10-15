@@ -17,11 +17,12 @@ case class CordicAcceleratorIO(dataWidth: Int) extends Bundle {
     val rs1 = SInt(dataWidth.W)
     val rs2 = SInt(dataWidth.W)
     val rs3 = SInt(dataWidth.W)
-    val op     = UInt(5.W)
+    val op  = UInt(5.W)
   }))
 
   val out = Output(ValidIO(new Bundle {
-    val dataOut = SInt(dataWidth.W)
+    val cordic = CordicBundle(dataWidth)
+    val dOut   = SInt(dataWidth.W)
   }))
 
 }
@@ -45,21 +46,23 @@ class CordicAccelerator(val mantissaBits: Int, val fractionBits: Int, val iterat
   postprocessor.io.in.cordic  := cordicCore.io.out.bits.cordic
   postprocessor.io.in.control := cordicCore.io.out.bits.control
 
-  io.out.bits.dataOut := postprocessor.io.out.dOut
-  io.out.valid        := cordicCore.io.out.valid
+  io.out.bits  := postprocessor.io.out
+  io.out.valid := cordicCore.io.out.valid
 
 }
 
 object CordicAccelerator extends App {
+
   case class Config(
-    td: String = ".",
-    cordicOps: Seq[String] = Seq(),
-    mantissaBits: Int = 0,
-    fractionBits: Int = 0,
-    iterations: Int = 0
+      td: String = ".",
+      cordicOps: Seq[String] = Seq(),
+      mantissaBits: Int = 0,
+      fractionBits: Int = 0,
+      iterations: Int = 0
   )
 
   val builder = OParser.builder[Config]
+
   val parser1 = {
     import builder._
     OParser.sequence(
@@ -70,26 +73,27 @@ object CordicAccelerator extends App {
       opt[Seq[String]]('c', "cordic_ops")
         .valueName("<op1>,<op1>...")
         .text("Cordic operations")
-        .action( (x, c) => c.copy(cordicOps = x)),
+        .action((x, c) => c.copy(cordicOps = x)),
       opt[Int]('m', "mantissa_bits")
         .text("Number of mantissa bits used")
-        .action( (x, c) => c.copy(mantissaBits = x)),
+        .action((x, c) => c.copy(mantissaBits = x)),
       opt[Int]('f', "fraction_bits")
         .text("Number of fraction bits used")
-        .action( (x, c) => c.copy(fractionBits = x)),
+        .action((x, c) => c.copy(fractionBits = x)),
       opt[Int]('i', "iterations")
         .text("How many iterations CORDIC runs")
-        .action( (x, c) => c.copy(iterations = x)))
+        .action((x, c) => c.copy(iterations = x))
+    )
   }
 
   OParser.parse(parser1, args, Config()) match {
     case Some(config) => {
 
       val opList = config.cordicOps.map(className => {
-        val packageName = this.getClass.getPackage.getName
+        val packageName   = this.getClass.getPackage.getName
         val classInstance = Class.forName(packageName + ".Cordic" + className)
-        val constructor = classInstance.getConstructor(classOf[Int], classOf[Int], classOf[Int])
-        val instance = constructor.newInstance(config.mantissaBits, config.fractionBits, config.iterations)
+        val constructor   = classInstance.getConstructor(classOf[Int], classOf[Int], classOf[Int])
+        val instance      = constructor.newInstance(config.mantissaBits, config.fractionBits, config.iterations)
         instance.asInstanceOf[CordicOp]
       })
       // These lines generate the Verilog output
@@ -112,4 +116,5 @@ object CordicAccelerator extends App {
       println("Could not parse arguments")
     }
   }
+
 }
