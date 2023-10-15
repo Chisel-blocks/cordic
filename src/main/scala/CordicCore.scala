@@ -37,14 +37,22 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
 
   val totalIterations = iterations + nRepeats
 
-  val inRegs = RegEnable(io.in, io.in.valid)
+  val inRegs     = RegEnable(io.in.bits, io.in.valid)
+  val inValidReg = RegInit(false.B)
+  inValidReg := io.in.valid
 
   val adders = Seq.fill(totalIterations)(Seq.fill(3)(Module(new AdderSubtractor(mantissaBits + fractionBits))))
 
   val inWires      = Seq.fill(totalIterations)(Wire(chiselTypeOf(io.in)))
   val outWires     = Seq.fill(totalIterations)(Wire(chiselTypeOf(io.in)))
-  val pipelineRegs = Seq.tabulate(totalIterations)(i => RegEnable(outWires(i), outWires(i).valid))
-  inWires(0) := inRegs
+  val pipelineRegs = Seq.tabulate(totalIterations)(i => RegEnable(outWires(i).bits, outWires(i).valid))
+  val validRegs    = Seq.tabulate(totalIterations)(i => RegInit(false.B))
+
+  validRegs.zip(outWires).map { case (validReg, outWire) => validReg := outWire.valid }
+  inWires(0).bits  := inRegs
+  inWires(0).valid := inValidReg
+
+  // Initialize all valid signals as false
 
   val LUT = CordicLut(mantissaBits, fractionBits, totalIterations)
 
@@ -70,7 +78,8 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
     }
 
     if (i > 0) {
-      inWires(i) := pipelineRegs(i - 1)
+      inWires(i).bits  := pipelineRegs(i - 1)
+      inWires(i).valid := validRegs(i - 1)
     }
 
     if (CordicConstants.hyperbolicRepeatIndices.contains(i - repeats) && !repeat) {
@@ -124,7 +133,8 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
     }
   }
 
-  io.out := pipelineRegs(totalIterations - 1)
+  io.out.bits  := pipelineRegs(totalIterations - 1)
+  io.out.valid := validRegs(totalIterations - 1)
 }
 
 object CordicCore extends App {
