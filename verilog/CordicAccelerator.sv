@@ -3,80 +3,37 @@ module CordicPreprocessor(	// <stdin>:3:3
   input  [15:0] io_in_rs1,	// src/main/scala/CordicPreprocessor.scala:34:14
   input  [4:0]  io_in_op,	// src/main/scala/CordicPreprocessor.scala:34:14
   output [15:0] io_out_cordic_x,	// src/main/scala/CordicPreprocessor.scala:34:14
-                io_out_cordic_y,	// src/main/scala/CordicPreprocessor.scala:34:14
                 io_out_cordic_z,	// src/main/scala/CordicPreprocessor.scala:34:14
-  output        io_out_control_rotType,	// src/main/scala/CordicPreprocessor.scala:34:14
-                io_out_control_mode,	// src/main/scala/CordicPreprocessor.scala:34:14
   output [4:0]  io_out_control_op,	// src/main/scala/CordicPreprocessor.scala:34:14
   output [3:0]  io_out_control_xOpSpecific,	// src/main/scala/CordicPreprocessor.scala:34:14
                 io_out_control_yOpSpecific	// src/main/scala/CordicPreprocessor.scala:34:14
 );
 
-  wire [7:0] _GEN = {1'h1, 1'h1, 1'h1, 1'h1, 1'h1, 1'h0, 1'h0, 1'h0};	// src/main/scala/CordicPreprocessor.scala:63:26
-  wire [7:0] _GEN_0 = {1'h1, 1'h0, 1'h1, 1'h0, 1'h0, 1'h1, 1'h0, 1'h0};	// src/main/scala/CordicPreprocessor.scala:62:26
-  wire       _GEN_1 = io_in_op == 5'h0;	// src/main/scala/CordicPreprocessor.scala:49:19
-  wire       largerThanPiOver2 = $signed(io_in_rs1) > 16'sh1921;	// src/main/scala/CordicOps.scala:130:37
-  wire       smallerThanNegPiOver2 = $signed(io_in_rs1) < -16'sh1921;	// src/main/scala/CordicOps.scala:131:37
-  wire       _GEN_2 = io_in_op == 5'h1;	// src/main/scala/CordicPreprocessor.scala:49:19
-  wire       largerThanPiOver2_2 = $signed(io_in_rs1) > 16'sh1921;	// src/main/scala/CordicOps.scala:130:37, :156:37
-  wire       smallerThanNegPiOver2_2 = $signed(io_in_rs1) < -16'sh1921;	// src/main/scala/CordicOps.scala:131:37, :157:37
-  wire       _GEN_3 = io_in_op == 5'h2;	// src/main/scala/CordicPreprocessor.scala:49:19
-  wire       _GEN_4 = io_in_op == 5'h3;	// src/main/scala/CordicPreprocessor.scala:49:19
-  wire       _GEN_5 = io_in_op == 5'h4;	// src/main/scala/CordicPreprocessor.scala:49:19
-  wire       _GEN_6 = _GEN_5 | _GEN_4;	// src/main/scala/CordicPreprocessor.scala:49:{19,28}, :53:34
-  wire       _GEN_7 = io_in_op == 5'h5;	// src/main/scala/CordicPreprocessor.scala:49:19
-  wire       _GEN_8 = io_in_op == 5'h6;	// src/main/scala/CordicPreprocessor.scala:49:19
-  wire       _GEN_9 = io_in_op == 5'h7;	// src/main/scala/CordicPreprocessor.scala:49:19
-  assign io_out_cordic_x =
-    _GEN_9
-      ? io_in_rs1 + 16'h1000
-      : _GEN_8
-          ? 16'h1351
-          : _GEN_7
-              ? 16'h1000
-              : _GEN_6 ? 16'h1351 : _GEN_3 ? 16'h1000 : _GEN_2 | _GEN_1 ? 16'h9B2 : 16'h0;	// <stdin>:3:3, src/main/scala/CordicOps.scala:258:23, src/main/scala/CordicPreprocessor.scala:41:30, :49:{19,28}, :53:34
-  assign io_out_cordic_y =
-    _GEN_9
-      ? io_in_rs1 - 16'h1000
-      : _GEN_8 ? 16'h1351 : _GEN_7 | ~(_GEN_6 | ~_GEN_3) ? io_in_rs1 : 16'h0;	// <stdin>:3:3, src/main/scala/CordicOps.scala:263:23, src/main/scala/CordicPreprocessor.scala:41:30, :49:{19,28}, :53:34, :54:34
+  wire _GEN = io_in_op == 5'h0;	// src/main/scala/CordicPreprocessor.scala:49:19
+  wire largerThanPiOver2 = $signed(io_in_rs1) > 16'sh1921;	// src/main/scala/CordicOps.scala:130:37
+  wire smallerThanNegPiOver2 = $signed(io_in_rs1) < -16'sh1921;	// src/main/scala/CordicOps.scala:131:37
+  wire _GEN_0 = io_in_op == 5'h1;	// src/main/scala/CordicPreprocessor.scala:49:19
+  wire largerThanPiOver2_2 = $signed(io_in_rs1) > 16'sh1921;	// src/main/scala/CordicOps.scala:130:37, :156:37
+  wire smallerThanNegPiOver2_2 = $signed(io_in_rs1) < -16'sh1921;	// src/main/scala/CordicOps.scala:131:37, :157:37
+  assign io_out_cordic_x = _GEN_0 | _GEN ? 16'h9B2 : 16'h0;	// <stdin>:3:3, src/main/scala/CordicPreprocessor.scala:41:30, :49:{19,28}, :53:34
   assign io_out_cordic_z =
-    _GEN_9
-      ? 16'h0
-      : _GEN_8
-          ? io_in_rs1
-          : _GEN_7
-              ? 16'h0
-              : _GEN_6
-                  ? io_in_rs1
-                  : _GEN_3
-                      ? 16'h0
-                      : _GEN_2
-                          ? (largerThanPiOver2_2
-                               ? io_in_rs1 - 16'h3243
-                               : smallerThanNegPiOver2_2
-                                   ? io_in_rs1 + 16'h3243
-                                   : io_in_rs1)
-                          : _GEN_1
-                              ? (largerThanPiOver2
-                                   ? io_in_rs1 - 16'h3243
-                                   : smallerThanNegPiOver2
-                                       ? io_in_rs1 + 16'h3243
-                                       : io_in_rs1)
-                              : 16'h0;	// <stdin>:3:3, src/main/scala/CordicOps.scala:130:37, :131:37, :139:{51,98}, :156:37, :157:37, :166:{51,98}, src/main/scala/CordicPreprocessor.scala:41:30, :43:30, :49:{19,28}, :53:34, :55:34, src/main/scala/chisel3/util/Mux.scala:141:16
-  assign io_out_control_rotType = _GEN[io_in_op[2:0]];	// <stdin>:3:3, :128:35, src/main/scala/CordicPreprocessor.scala:63:26
-  assign io_out_control_mode = _GEN_0[io_in_op[2:0]];	// <stdin>:3:3, :128:35, src/main/scala/CordicPreprocessor.scala:62:26
+    _GEN_0
+      ? (largerThanPiOver2_2
+           ? io_in_rs1 - 16'h3243
+           : smallerThanNegPiOver2_2 ? io_in_rs1 + 16'h3243 : io_in_rs1)
+      : _GEN
+          ? (largerThanPiOver2
+               ? io_in_rs1 - 16'h3243
+               : smallerThanNegPiOver2 ? io_in_rs1 + 16'h3243 : io_in_rs1)
+          : 16'h0;	// <stdin>:3:3, src/main/scala/CordicOps.scala:130:37, :131:37, :139:{51,98}, :156:37, :157:37, :166:{51,98}, src/main/scala/CordicPreprocessor.scala:41:30, :43:30, :49:{19,28}, :55:34, src/main/scala/chisel3/util/Mux.scala:141:16
   assign io_out_control_op = io_in_op;	// <stdin>:3:3
   assign io_out_control_xOpSpecific =
-    _GEN_9 | _GEN_8 | _GEN_7 | _GEN_5 | _GEN_4 | _GEN_3 | ~_GEN_2
-      ? 4'h0
-      : {2'h0, largerThanPiOver2_2, smallerThanNegPiOver2_2};	// <stdin>:3:3, src/main/scala/CordicOps.scala:156:37, :157:37, src/main/scala/CordicPreprocessor.scala:44:30, :49:{19,28}, :56:34, :57:34
+    _GEN_0 ? {2'h0, largerThanPiOver2_2, smallerThanNegPiOver2_2} : 4'h0;	// <stdin>:3:3, src/main/scala/CordicOps.scala:156:37, :157:37, src/main/scala/CordicPreprocessor.scala:44:30, :49:{19,28}, :56:34, :57:34
   assign io_out_control_yOpSpecific =
-    _GEN_9 | _GEN_8 | _GEN_7 | _GEN_5 | _GEN_4 | _GEN_3 | _GEN_2 | ~_GEN_1
-      ? 4'h0
-      : {2'h0, largerThanPiOver2, smallerThanNegPiOver2};	// <stdin>:3:3, src/main/scala/CordicOps.scala:130:37, :131:37, src/main/scala/CordicPreprocessor.scala:44:30, :49:{19,28}, :57:34
+    _GEN_0 | ~_GEN ? 4'h0 : {2'h0, largerThanPiOver2, smallerThanNegPiOver2};	// <stdin>:3:3, src/main/scala/CordicOps.scala:130:37, :131:37, src/main/scala/CordicPreprocessor.scala:44:30, :49:{19,28}, :57:34
 endmodule
 
-module CordicPostprocessor(	// <stdin>:134:3
+module CordicPostprocessor(	// <stdin>:68:3
   input  [15:0] io_in_cordic_x,	// src/main/scala/CordicPostprocessor.scala:32:14
                 io_in_cordic_y,	// src/main/scala/CordicPostprocessor.scala:32:14
                 io_in_cordic_z,	// src/main/scala/CordicPostprocessor.scala:32:14
@@ -101,42 +58,13 @@ module CordicPostprocessor(	// <stdin>:134:3
     io_in_control_xOpSpecific[0] | io_in_control_xOpSpecific[1]
       ? ~io_in_cordic_x + 16'h1
       : io_in_cordic_x;	// src/main/scala/CordicOps.scala:144:41, :171:{8,16,20,30,35,41}
-  wire        _GEN_2 = io_in_control_op == 5'h2;	// src/main/scala/CordicPostprocessor.scala:40:27
-  wire        _GEN_3 = io_in_control_op == 5'h3;	// src/main/scala/CordicPostprocessor.scala:40:27
-  wire        _GEN_4 = io_in_control_op == 5'h4;	// src/main/scala/CordicPostprocessor.scala:40:27
-  wire        _GEN_5 = io_in_control_op == 5'h5;	// src/main/scala/CordicPostprocessor.scala:40:27
-  wire        _GEN_6 = io_in_control_op == 5'h6;	// src/main/scala/CordicPostprocessor.scala:40:27
-  wire        _GEN_7 = io_in_control_op == 5'h7;	// src/main/scala/CordicPostprocessor.scala:40:27
-  wire [15:0] _GEN_8 = {io_in_cordic_z[14:0], 1'h0};	// src/main/scala/CordicOps.scala:268:10, src/main/scala/CordicPostprocessor.scala:46:23
-  assign io_out_cordic_x =
-    _GEN_7 | _GEN_6 | _GEN_5 | _GEN_4 | _GEN_3 | _GEN_2
-      ? io_in_cordic_x
-      : _GEN_1 ? xPostProcess : _GEN ? io_in_cordic_x : 16'h0;	// <stdin>:134:3, src/main/scala/CordicOps.scala:171:8, src/main/scala/CordicPostprocessor.scala:36:39, :40:{27,36}, :44:23
-  assign io_out_cordic_y =
-    _GEN_7 | _GEN_6 | _GEN_5 | _GEN_4 | _GEN_3 | _GEN_2 | _GEN_1
-      ? io_in_cordic_y
-      : _GEN_0;	// <stdin>:134:3, src/main/scala/CordicPostprocessor.scala:36:39, :40:{27,36}, :45:23
-  assign io_out_cordic_z =
-    _GEN_7
-      ? _GEN_8
-      : _GEN_6 | _GEN_5 | _GEN_4 | _GEN_3 | _GEN_2 | _GEN_1 | _GEN
-          ? io_in_cordic_z
-          : 16'h0;	// <stdin>:134:3, src/main/scala/CordicPostprocessor.scala:36:39, :40:{27,36}, :46:23
-  assign io_out_dOut =
-    _GEN_7
-      ? _GEN_8
-      : _GEN_6
-          ? io_in_cordic_x
-          : _GEN_5
-              ? io_in_cordic_z
-              : _GEN_4
-                  ? io_in_cordic_x
-                  : _GEN_3
-                      ? io_in_cordic_y
-                      : _GEN_2 ? io_in_cordic_z : _GEN_1 ? xPostProcess : _GEN_0;	// <stdin>:134:3, src/main/scala/CordicOps.scala:171:8, src/main/scala/CordicPostprocessor.scala:36:39, :40:{27,36}, :45:23, :46:23, :47:19
+  assign io_out_cordic_x = _GEN_1 ? xPostProcess : _GEN ? io_in_cordic_x : 16'h0;	// <stdin>:68:3, src/main/scala/CordicOps.scala:171:8, src/main/scala/CordicPostprocessor.scala:36:39, :40:{27,36}, :44:23
+  assign io_out_cordic_y = _GEN_1 ? io_in_cordic_y : _GEN_0;	// <stdin>:68:3, src/main/scala/CordicPostprocessor.scala:36:39, :40:{27,36}, :45:23
+  assign io_out_cordic_z = _GEN_1 | _GEN ? io_in_cordic_z : 16'h0;	// <stdin>:68:3, src/main/scala/CordicPostprocessor.scala:36:39, :40:{27,36}, :46:23
+  assign io_out_dOut = _GEN_1 ? xPostProcess : _GEN_0;	// <stdin>:68:3, src/main/scala/CordicOps.scala:171:8, src/main/scala/CordicPostprocessor.scala:36:39, :40:{27,36}, :45:23, :47:19
 endmodule
 
-module AdderSubtractor(	// <stdin>:212:3, :448:3, :684:3, :920:3, :1156:3, :1392:3, :1628:3, :1864:3, :2100:3, :2336:3, :2572:3, :2808:3, :3044:3, :3280:3, :3516:3, :3752:3, :3988:3, :4224:3, :4460:3, :4696:3, :4932:3, :5168:3, :5404:3, :5640:3, :5876:3, :6112:3, :6348:3, :6584:3, :6820:3, :7056:3, :7292:3, :7528:3, :7764:3, :8000:3, :8236:3, :8472:3, :8708:3, :8944:3, :9180:3, :9416:3, :9652:3, :9888:3, :10124:3, :10360:3, :10596:3, :10832:3, :11068:3, :11304:3
+module AdderSubtractor(	// <stdin>:109:3, :345:3, :581:3, :817:3, :1053:3, :1289:3, :1525:3, :1761:3, :1997:3, :2233:3, :2469:3, :2705:3, :2941:3, :3177:3, :3413:3, :3649:3, :3885:3, :4121:3, :4357:3, :4593:3, :4829:3, :5065:3, :5301:3, :5537:3, :5773:3, :6009:3, :6245:3, :6481:3, :6717:3, :6953:3, :7189:3, :7425:3, :7661:3, :7897:3, :8133:3, :8369:3, :8605:3, :8841:3, :9077:3, :9313:3, :9549:3, :9785:3, :10021:3, :10257:3, :10493:3, :10729:3, :10965:3, :11201:3
   input  [15:0] io_A,	// src/main/scala/AdderSubtractor.scala:26:17
                 io_B,	// src/main/scala/AdderSubtractor.scala:26:17
   input         io_D,	// src/main/scala/AdderSubtractor.scala:26:17
@@ -188,18 +116,15 @@ module AdderSubtractor(	// <stdin>:212:3, :448:3, :684:3, :920:3, :1156:3, :1392
      b_3 ^ io_A[3] ^ C_vec_3,
      b_2 ^ io_A[2] ^ C_vec_2,
      b_1 ^ io_A[1] ^ C_vec_1,
-     b ^ io_A[0] ^ io_D};	// <stdin>:212:3, :448:3, :684:3, :920:3, :1156:3, :1392:3, :1628:3, :1864:3, :2100:3, :2336:3, :2572:3, :2808:3, :3044:3, :3280:3, :3516:3, :3752:3, :3988:3, :4224:3, :4460:3, :4696:3, :4932:3, :5168:3, :5404:3, :5640:3, :5876:3, :6112:3, :6348:3, :6584:3, :6820:3, :7056:3, :7292:3, :7528:3, :7764:3, :8000:3, :8236:3, :8472:3, :8708:3, :8944:3, :9180:3, :9416:3, :9652:3, :9888:3, :10124:3, :10360:3, :10596:3, :10832:3, :11068:3, :11304:3, src/main/scala/AdderSubtractor.scala:33:{17,21}, :34:{29,33}, :35:{24,35,47,52}, :38:25
+     b ^ io_A[0] ^ io_D};	// <stdin>:109:3, :345:3, :581:3, :817:3, :1053:3, :1289:3, :1525:3, :1761:3, :1997:3, :2233:3, :2469:3, :2705:3, :2941:3, :3177:3, :3413:3, :3649:3, :3885:3, :4121:3, :4357:3, :4593:3, :4829:3, :5065:3, :5301:3, :5537:3, :5773:3, :6009:3, :6245:3, :6481:3, :6717:3, :6953:3, :7189:3, :7425:3, :7661:3, :7897:3, :8133:3, :8369:3, :8605:3, :8841:3, :9077:3, :9313:3, :9549:3, :9785:3, :10021:3, :10257:3, :10493:3, :10729:3, :10965:3, :11201:3, src/main/scala/AdderSubtractor.scala:33:{17,21}, :34:{29,33}, :35:{24,35,47,52}, :38:25
 endmodule
 
-module CordicCore(	// <stdin>:11540:3
-  input         clock,	// <stdin>:11541:11
-                reset,	// <stdin>:11542:11
+module CordicCore(	// <stdin>:11437:3
+  input         clock,	// <stdin>:11438:11
+                reset,	// <stdin>:11439:11
                 io_in_valid,	// src/main/scala/CordicCore.scala:23:14
   input  [15:0] io_in_bits_cordic_x,	// src/main/scala/CordicCore.scala:23:14
-                io_in_bits_cordic_y,	// src/main/scala/CordicCore.scala:23:14
                 io_in_bits_cordic_z,	// src/main/scala/CordicCore.scala:23:14
-  input         io_in_bits_control_rotType,	// src/main/scala/CordicCore.scala:23:14
-                io_in_bits_control_mode,	// src/main/scala/CordicCore.scala:23:14
   input  [4:0]  io_in_bits_control_op,	// src/main/scala/CordicCore.scala:23:14
   input  [3:0]  io_in_bits_control_xOpSpecific,	// src/main/scala/CordicCore.scala:23:14
                 io_in_bits_control_yOpSpecific,	// src/main/scala/CordicCore.scala:23:14
@@ -261,10 +186,7 @@ module CordicCore(	// <stdin>:11540:3
   wire [15:0] _adders_0_1_io_S;	// src/main/scala/CordicCore.scala:44:60
   wire [15:0] _adders_0_0_io_S;	// src/main/scala/CordicCore.scala:44:60
   reg  [15:0] inRegs_cordic_x;	// src/main/scala/CordicCore.scala:40:29
-  reg  [15:0] inRegs_cordic_y;	// src/main/scala/CordicCore.scala:40:29
   reg  [15:0] inRegs_cordic_z;	// src/main/scala/CordicCore.scala:40:29
-  reg         inRegs_control_rotType;	// src/main/scala/CordicCore.scala:40:29
-  reg         inRegs_control_mode;	// src/main/scala/CordicCore.scala:40:29
   reg  [4:0]  inRegs_control_op;	// src/main/scala/CordicCore.scala:40:29
   reg  [3:0]  inRegs_control_xOpSpecific;	// src/main/scala/CordicCore.scala:40:29
   reg  [3:0]  inRegs_control_yOpSpecific;	// src/main/scala/CordicCore.scala:40:29
@@ -272,72 +194,54 @@ module CordicCore(	// <stdin>:11540:3
   reg  [15:0] pipelineRegs_0_cordic_x;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_0_cordic_y;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_0_cordic_z;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_0_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_0_control_mode;	// src/main/scala/CordicCore.scala:48:66
   reg  [4:0]  pipelineRegs_0_control_op;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_0_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_0_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_1_cordic_x;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_1_cordic_y;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_1_cordic_z;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_1_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_1_control_mode;	// src/main/scala/CordicCore.scala:48:66
   reg  [4:0]  pipelineRegs_1_control_op;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_1_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_1_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_2_cordic_x;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_2_cordic_y;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_2_cordic_z;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_2_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_2_control_mode;	// src/main/scala/CordicCore.scala:48:66
   reg  [4:0]  pipelineRegs_2_control_op;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_2_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_2_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_3_cordic_x;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_3_cordic_y;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_3_cordic_z;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_3_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_3_control_mode;	// src/main/scala/CordicCore.scala:48:66
   reg  [4:0]  pipelineRegs_3_control_op;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_3_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_3_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_4_cordic_x;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_4_cordic_y;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_4_cordic_z;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_4_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_4_control_mode;	// src/main/scala/CordicCore.scala:48:66
   reg  [4:0]  pipelineRegs_4_control_op;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_4_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_4_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_5_cordic_x;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_5_cordic_y;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_5_cordic_z;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_5_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_5_control_mode;	// src/main/scala/CordicCore.scala:48:66
   reg  [4:0]  pipelineRegs_5_control_op;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_5_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_5_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_6_cordic_x;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_6_cordic_y;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_6_cordic_z;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_6_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_6_control_mode;	// src/main/scala/CordicCore.scala:48:66
   reg  [4:0]  pipelineRegs_6_control_op;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_6_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_6_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_7_cordic_x;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_7_cordic_y;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_7_cordic_z;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_7_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_7_control_mode;	// src/main/scala/CordicCore.scala:48:66
   reg  [4:0]  pipelineRegs_7_control_op;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_7_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_7_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_8_cordic_x;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_8_cordic_y;	// src/main/scala/CordicCore.scala:48:66
   reg  [15:0] pipelineRegs_8_cordic_z;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_8_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-  reg         pipelineRegs_8_control_mode;	// src/main/scala/CordicCore.scala:48:66
   reg  [4:0]  pipelineRegs_8_control_op;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_8_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
   reg  [3:0]  pipelineRegs_8_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
@@ -411,103 +315,55 @@ module CordicCore(	// <stdin>:11540:3
   reg         validRegs_13;	// src/main/scala/CordicCore.scala:49:64
   reg         validRegs_14;	// src/main/scala/CordicCore.scala:49:64
   reg         validRegs_15;	// src/main/scala/CordicCore.scala:49:64
-  wire        sigma =
-    inRegs_control_mode
-      ? $signed(inRegs_cordic_y) < 16'sh0
-      : $signed(inRegs_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:40:29, :68:64, :69:{13,41}, :71:{13,41}, :107:15
-  wire [12:0] _adders_0_2_io_B_T_1 = inRegs_control_rotType ? 13'h1FFF : 13'hC90;	// src/main/scala/CordicCore.scala:40:29, :117:29
-  wire        sigma_1 =
-    pipelineRegs_0_control_mode
-      ? $signed(pipelineRegs_0_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_0_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
-  wire [12:0] _adders_1_2_io_B_T_1 = pipelineRegs_0_control_rotType ? 13'h8C9 : 13'h76B;	// src/main/scala/CordicCore.scala:48:66, :117:29
-  wire        sigma_2 =
-    pipelineRegs_1_control_mode
-      ? $signed(pipelineRegs_1_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_1_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
-  wire [11:0] _adders_2_2_io_B_T_1 = pipelineRegs_1_control_rotType ? 12'h416 : 12'h3EB;	// src/main/scala/CordicCore.scala:48:66, :117:29
-  wire        sigma_3 =
-    pipelineRegs_2_control_mode
-      ? $signed(pipelineRegs_2_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_2_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
-  wire [10:0] _adders_3_2_io_B_T_1 = pipelineRegs_2_control_rotType ? 11'h202 : 11'h1FD;	// src/main/scala/CordicCore.scala:48:66, :117:29
-  wire        sigma_4 =
-    pipelineRegs_3_control_mode
-      ? $signed(pipelineRegs_3_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_3_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
-  wire [9:0]  _adders_4_2_io_B_T_1 = pipelineRegs_3_control_rotType ? 10'h100 : 10'hFF;	// src/main/scala/CordicCore.scala:48:66, :117:29
-  wire        sigma_5 =
-    pipelineRegs_4_control_mode
-      ? $signed(pipelineRegs_4_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_4_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
-  wire [9:0]  _adders_5_2_io_B_T_1 = pipelineRegs_4_control_rotType ? 10'h100 : 10'hFF;	// src/main/scala/CordicCore.scala:48:66, :117:29
-  wire        sigma_6 =
-    pipelineRegs_5_control_mode
-      ? $signed(pipelineRegs_5_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_5_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
-  wire [8:0]  _adders_6_2_io_B_T_1 = pipelineRegs_5_control_rotType ? 9'h80 : 9'h7F;	// src/main/scala/CordicCore.scala:48:66, :117:29
-  wire        sigma_7 =
-    pipelineRegs_6_control_mode
-      ? $signed(pipelineRegs_6_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_6_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
-  wire [7:0]  _adders_7_2_io_B_T_1 = pipelineRegs_6_control_rotType ? 8'h40 : 8'h3F;	// src/main/scala/CordicCore.scala:48:66, :117:29
-  wire        sigma_8 =
-    pipelineRegs_7_control_mode
-      ? $signed(pipelineRegs_7_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_7_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
-  wire [6:0]  _adders_8_2_io_B_T_1 = pipelineRegs_7_control_rotType ? 7'h20 : 7'h1F;	// src/main/scala/CordicCore.scala:48:66, :117:29
-  wire        sigma_9 =
-    pipelineRegs_8_control_mode
-      ? $signed(pipelineRegs_8_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_8_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
-  wire [5:0]  _adders_9_2_io_B_T_1 = pipelineRegs_8_control_rotType ? 6'h10 : 6'hF;	// src/main/scala/CordicCore.scala:48:66, :117:29
+  wire        sigma = $signed(inRegs_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:40:29, :69:41
+  wire        sigma_1 = $signed(pipelineRegs_0_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :69:41
+  wire        sigma_2 = $signed(pipelineRegs_1_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :69:41
+  wire        sigma_3 = $signed(pipelineRegs_2_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :69:41
+  wire        sigma_4 = $signed(pipelineRegs_3_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :69:41
+  wire        sigma_5 = $signed(pipelineRegs_4_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :69:41
+  wire        sigma_6 = $signed(pipelineRegs_5_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :69:41
+  wire        sigma_7 = $signed(pipelineRegs_6_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :69:41
+  wire        sigma_8 = $signed(pipelineRegs_7_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :69:41
+  wire        sigma_9 = $signed(pipelineRegs_8_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :69:41
   wire        sigma_10 =
     pipelineRegs_9_control_mode
       ? $signed(pipelineRegs_9_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_9_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
+      : $signed(pipelineRegs_9_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:23:14, :44:60, :48:66, :68:64, :69:{13,41}, :71:{13,41}
   wire [4:0]  _adders_10_2_io_B_T_1 = pipelineRegs_9_control_rotType ? 5'h8 : 5'h7;	// src/main/scala/CordicCore.scala:48:66, :117:29
   wire        sigma_11 =
     pipelineRegs_10_control_mode
       ? $signed(pipelineRegs_10_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_10_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
+      : $signed(pipelineRegs_10_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:23:14, :44:60, :48:66, :68:64, :69:{13,41}, :71:{13,41}
   wire [3:0]  _adders_11_2_io_B_T_1 = pipelineRegs_10_control_rotType ? 4'h4 : 4'h3;	// src/main/scala/CordicCore.scala:48:66, :117:29
   wire        sigma_12 =
     pipelineRegs_11_control_mode
       ? $signed(pipelineRegs_11_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_11_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
+      : $signed(pipelineRegs_11_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:23:14, :44:60, :48:66, :68:64, :69:{13,41}, :71:{13,41}
   wire [2:0]  _adders_12_2_io_B_T_1 = pipelineRegs_11_control_rotType ? 3'h2 : 3'h1;	// src/main/scala/CordicCore.scala:48:66, :117:29
   wire        sigma_13 =
     pipelineRegs_12_control_mode
       ? $signed(pipelineRegs_12_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_12_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
+      : $signed(pipelineRegs_12_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:23:14, :44:60, :48:66, :68:64, :69:{13,41}, :71:{13,41}
   wire        sigma_14 =
     pipelineRegs_13_control_mode
       ? $signed(pipelineRegs_13_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_13_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
+      : $signed(pipelineRegs_13_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:23:14, :44:60, :48:66, :68:64, :69:{13,41}, :71:{13,41}
   wire        sigma_15 =
     pipelineRegs_14_control_mode
       ? $signed(pipelineRegs_14_cordic_y) < 16'sh0
-      : $signed(pipelineRegs_14_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:{13,41}, :71:{13,41}, :107:15
-  always @(posedge clock) begin	// <stdin>:11541:11
+      : $signed(pipelineRegs_14_cordic_z) > -16'sh1;	// src/main/scala/CordicCore.scala:23:14, :44:60, :48:66, :68:64, :69:{13,41}, :71:{13,41}
+  always @(posedge clock) begin	// <stdin>:11438:11
     if (io_in_valid) begin	// src/main/scala/CordicCore.scala:23:14
       inRegs_cordic_x <= io_in_bits_cordic_x;	// src/main/scala/CordicCore.scala:40:29
-      inRegs_cordic_y <= io_in_bits_cordic_y;	// src/main/scala/CordicCore.scala:40:29
       inRegs_cordic_z <= io_in_bits_cordic_z;	// src/main/scala/CordicCore.scala:40:29
-      inRegs_control_rotType <= io_in_bits_control_rotType;	// src/main/scala/CordicCore.scala:40:29
-      inRegs_control_mode <= io_in_bits_control_mode;	// src/main/scala/CordicCore.scala:40:29
       inRegs_control_op <= io_in_bits_control_op;	// src/main/scala/CordicCore.scala:40:29
       inRegs_control_xOpSpecific <= io_in_bits_control_xOpSpecific;	// src/main/scala/CordicCore.scala:40:29
       inRegs_control_yOpSpecific <= io_in_bits_control_yOpSpecific;	// src/main/scala/CordicCore.scala:40:29
     end
     if (inValidReg) begin	// src/main/scala/CordicCore.scala:41:27
-      pipelineRegs_0_cordic_x <=
-        inRegs_control_rotType ? inRegs_cordic_x : _adders_0_0_io_S;	// src/main/scala/CordicCore.scala:40:29, :44:60, :48:66, :120:18, :121:19, :123:33
-      pipelineRegs_0_cordic_y <=
-        inRegs_control_rotType ? inRegs_cordic_y : _adders_0_1_io_S;	// src/main/scala/CordicCore.scala:40:29, :44:60, :48:66, :120:18, :121:19, :124:33
-      pipelineRegs_0_cordic_z <=
-        inRegs_control_rotType ? inRegs_cordic_z : _adders_0_2_io_S;	// src/main/scala/CordicCore.scala:40:29, :44:60, :48:66, :120:18, :121:19, :125:33
-      pipelineRegs_0_control_rotType <= inRegs_control_rotType;	// src/main/scala/CordicCore.scala:40:29, :48:66
-      pipelineRegs_0_control_mode <= inRegs_control_mode;	// src/main/scala/CordicCore.scala:40:29, :48:66
+      pipelineRegs_0_cordic_x <= _adders_0_0_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
+      pipelineRegs_0_cordic_y <= _adders_0_1_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
+      pipelineRegs_0_cordic_z <= _adders_0_2_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_0_control_op <= inRegs_control_op;	// src/main/scala/CordicCore.scala:40:29, :48:66
       pipelineRegs_0_control_xOpSpecific <= inRegs_control_xOpSpecific;	// src/main/scala/CordicCore.scala:40:29, :48:66
       pipelineRegs_0_control_yOpSpecific <= inRegs_control_yOpSpecific;	// src/main/scala/CordicCore.scala:40:29, :48:66
@@ -516,8 +372,6 @@ module CordicCore(	// <stdin>:11540:3
       pipelineRegs_1_cordic_x <= _adders_1_0_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_1_cordic_y <= _adders_1_1_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_1_cordic_z <= _adders_1_2_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
-      pipelineRegs_1_control_rotType <= pipelineRegs_0_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-      pipelineRegs_1_control_mode <= pipelineRegs_0_control_mode;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_1_control_op <= pipelineRegs_0_control_op;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_1_control_xOpSpecific <= pipelineRegs_0_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_1_control_yOpSpecific <= pipelineRegs_0_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
@@ -526,8 +380,6 @@ module CordicCore(	// <stdin>:11540:3
       pipelineRegs_2_cordic_x <= _adders_2_0_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_2_cordic_y <= _adders_2_1_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_2_cordic_z <= _adders_2_2_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
-      pipelineRegs_2_control_rotType <= pipelineRegs_1_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-      pipelineRegs_2_control_mode <= pipelineRegs_1_control_mode;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_2_control_op <= pipelineRegs_1_control_op;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_2_control_xOpSpecific <= pipelineRegs_1_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_2_control_yOpSpecific <= pipelineRegs_1_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
@@ -536,8 +388,6 @@ module CordicCore(	// <stdin>:11540:3
       pipelineRegs_3_cordic_x <= _adders_3_0_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_3_cordic_y <= _adders_3_1_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_3_cordic_z <= _adders_3_2_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
-      pipelineRegs_3_control_rotType <= pipelineRegs_2_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-      pipelineRegs_3_control_mode <= pipelineRegs_2_control_mode;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_3_control_op <= pipelineRegs_2_control_op;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_3_control_xOpSpecific <= pipelineRegs_2_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_3_control_yOpSpecific <= pipelineRegs_2_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
@@ -546,8 +396,6 @@ module CordicCore(	// <stdin>:11540:3
       pipelineRegs_4_cordic_x <= _adders_4_0_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_4_cordic_y <= _adders_4_1_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_4_cordic_z <= _adders_4_2_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
-      pipelineRegs_4_control_rotType <= pipelineRegs_3_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-      pipelineRegs_4_control_mode <= pipelineRegs_3_control_mode;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_4_control_op <= pipelineRegs_3_control_op;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_4_control_xOpSpecific <= pipelineRegs_3_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_4_control_yOpSpecific <= pipelineRegs_3_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
@@ -556,8 +404,6 @@ module CordicCore(	// <stdin>:11540:3
       pipelineRegs_5_cordic_x <= _adders_5_0_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_5_cordic_y <= _adders_5_1_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_5_cordic_z <= _adders_5_2_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
-      pipelineRegs_5_control_rotType <= pipelineRegs_4_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-      pipelineRegs_5_control_mode <= pipelineRegs_4_control_mode;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_5_control_op <= pipelineRegs_4_control_op;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_5_control_xOpSpecific <= pipelineRegs_4_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_5_control_yOpSpecific <= pipelineRegs_4_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
@@ -566,8 +412,6 @@ module CordicCore(	// <stdin>:11540:3
       pipelineRegs_6_cordic_x <= _adders_6_0_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_6_cordic_y <= _adders_6_1_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_6_cordic_z <= _adders_6_2_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
-      pipelineRegs_6_control_rotType <= pipelineRegs_5_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-      pipelineRegs_6_control_mode <= pipelineRegs_5_control_mode;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_6_control_op <= pipelineRegs_5_control_op;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_6_control_xOpSpecific <= pipelineRegs_5_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_6_control_yOpSpecific <= pipelineRegs_5_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
@@ -576,8 +420,6 @@ module CordicCore(	// <stdin>:11540:3
       pipelineRegs_7_cordic_x <= _adders_7_0_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_7_cordic_y <= _adders_7_1_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_7_cordic_z <= _adders_7_2_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
-      pipelineRegs_7_control_rotType <= pipelineRegs_6_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-      pipelineRegs_7_control_mode <= pipelineRegs_6_control_mode;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_7_control_op <= pipelineRegs_6_control_op;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_7_control_xOpSpecific <= pipelineRegs_6_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_7_control_yOpSpecific <= pipelineRegs_6_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
@@ -586,8 +428,6 @@ module CordicCore(	// <stdin>:11540:3
       pipelineRegs_8_cordic_x <= _adders_8_0_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_8_cordic_y <= _adders_8_1_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_8_cordic_z <= _adders_8_2_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
-      pipelineRegs_8_control_rotType <= pipelineRegs_7_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-      pipelineRegs_8_control_mode <= pipelineRegs_7_control_mode;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_8_control_op <= pipelineRegs_7_control_op;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_8_control_xOpSpecific <= pipelineRegs_7_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_8_control_yOpSpecific <= pipelineRegs_7_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
@@ -596,12 +436,12 @@ module CordicCore(	// <stdin>:11540:3
       pipelineRegs_9_cordic_x <= _adders_9_0_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_9_cordic_y <= _adders_9_1_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_9_cordic_z <= _adders_9_2_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
-      pipelineRegs_9_control_rotType <= pipelineRegs_8_control_rotType;	// src/main/scala/CordicCore.scala:48:66
-      pipelineRegs_9_control_mode <= pipelineRegs_8_control_mode;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_9_control_op <= pipelineRegs_8_control_op;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_9_control_xOpSpecific <= pipelineRegs_8_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_9_control_yOpSpecific <= pipelineRegs_8_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
     end
+    pipelineRegs_9_control_rotType <= ~validRegs_8 & pipelineRegs_9_control_rotType;	// src/main/scala/CordicCore.scala:48:66, :49:64
+    pipelineRegs_9_control_mode <= ~validRegs_8 & pipelineRegs_9_control_mode;	// src/main/scala/CordicCore.scala:48:66, :49:64
     if (validRegs_9) begin	// src/main/scala/CordicCore.scala:49:64
       pipelineRegs_10_cordic_x <= _adders_10_0_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
       pipelineRegs_10_cordic_y <= _adders_10_1_io_S;	// src/main/scala/CordicCore.scala:44:60, :48:66
@@ -660,26 +500,26 @@ module CordicCore(	// <stdin>:11540:3
       pipelineRegs_15_control_xOpSpecific <= pipelineRegs_14_control_xOpSpecific;	// src/main/scala/CordicCore.scala:48:66
       pipelineRegs_15_control_yOpSpecific <= pipelineRegs_14_control_yOpSpecific;	// src/main/scala/CordicCore.scala:48:66
     end
-    if (reset) begin	// <stdin>:11541:11
-      inValidReg <= 1'h0;	// src/main/scala/CordicCore.scala:41:27, :69:41
-      validRegs_0 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_1 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_2 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_3 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_4 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_5 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_6 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_7 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_8 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_9 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_10 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_11 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_12 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_13 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_14 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
-      validRegs_15 <= 1'h0;	// src/main/scala/CordicCore.scala:49:64, :69:41
+    if (reset) begin	// <stdin>:11438:11
+      inValidReg <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :41:27
+      validRegs_0 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_1 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_2 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_3 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_4 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_5 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_6 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_7 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_8 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_9 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_10 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_11 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_12 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_13 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_14 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
+      validRegs_15 <= 1'h0;	// src/main/scala/CordicCore.scala:23:14, :49:64
     end
-    else begin	// <stdin>:11541:11
+    else begin	// <stdin>:11438:11
       inValidReg <= io_in_valid;	// src/main/scala/CordicCore.scala:41:27
       validRegs_0 <= inValidReg;	// src/main/scala/CordicCore.scala:41:27, :49:64
       validRegs_1 <= validRegs_0;	// src/main/scala/CordicCore.scala:49:64
@@ -701,182 +541,182 @@ module CordicCore(	// <stdin>:11540:3
   end // always @(posedge)
   AdderSubtractor adders_0_0 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (inRegs_cordic_x),	// src/main/scala/CordicCore.scala:40:29
-    .io_B (inRegs_cordic_y),	// src/main/scala/CordicCore.scala:40:29
-    .io_D (inRegs_control_rotType ^ sigma),	// src/main/scala/CordicCore.scala:40:29, :68:64, :69:13, :71:13, :100:19
+    .io_B (16'h0),	// src/main/scala/CordicCore.scala:23:14, :44:60
+    .io_D (sigma),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_0_0_io_S)
   );
   AdderSubtractor adders_0_1 (	// src/main/scala/CordicCore.scala:44:60
-    .io_A (inRegs_cordic_y),	// src/main/scala/CordicCore.scala:40:29
+    .io_A (16'h0),	// src/main/scala/CordicCore.scala:23:14, :44:60
     .io_B (inRegs_cordic_x),	// src/main/scala/CordicCore.scala:40:29
-    .io_D (~sigma),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13, :101:19
+    .io_D (~sigma),	// src/main/scala/CordicCore.scala:69:41, :101:19
     .io_S (_adders_0_1_io_S)
   );
   AdderSubtractor adders_0_2 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (inRegs_cordic_z),	// src/main/scala/CordicCore.scala:40:29
-    .io_B ({{3{_adders_0_2_io_B_T_1[12]}}, _adders_0_2_io_B_T_1}),	// src/main/scala/CordicCore.scala:117:{23,29}
-    .io_D (sigma),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13
+    .io_B (16'hC90),	// src/main/scala/CordicCore.scala:117:23
+    .io_D (sigma),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_0_2_io_S)
   );
   AdderSubtractor adders_1_0 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_0_cordic_x),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({pipelineRegs_0_cordic_y[15], pipelineRegs_0_cordic_y[15:1]}),	// src/main/scala/CordicCore.scala:48:66, :106:{15,43}
-    .io_D (pipelineRegs_0_control_rotType ^ sigma_1),	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:13, :71:13, :100:19
+    .io_D (sigma_1),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_1_0_io_S)
   );
   AdderSubtractor adders_1_1 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_0_cordic_y),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({pipelineRegs_0_cordic_x[15], pipelineRegs_0_cordic_x[15:1]}),	// src/main/scala/CordicCore.scala:48:66, :105:{15,43}
-    .io_D (~sigma_1),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13, :101:19
+    .io_D (~sigma_1),	// src/main/scala/CordicCore.scala:69:41, :101:19
     .io_S (_adders_1_1_io_S)
   );
   AdderSubtractor adders_1_2 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_0_cordic_z),	// src/main/scala/CordicCore.scala:48:66
-    .io_B ({{3{_adders_1_2_io_B_T_1[12]}}, _adders_1_2_io_B_T_1}),	// src/main/scala/CordicCore.scala:117:{23,29}
-    .io_D (sigma_1),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13
+    .io_B (16'h76B),	// src/main/scala/CordicCore.scala:117:23
+    .io_D (sigma_1),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_1_2_io_S)
   );
   AdderSubtractor adders_2_0 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_1_cordic_x),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{2{pipelineRegs_1_cordic_y[15]}}, pipelineRegs_1_cordic_y[15:2]}),	// src/main/scala/CordicCore.scala:48:66, :106:{15,43}
-    .io_D (pipelineRegs_1_control_rotType ^ sigma_2),	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:13, :71:13, :100:19
+    .io_D (sigma_2),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_2_0_io_S)
   );
   AdderSubtractor adders_2_1 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_1_cordic_y),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{2{pipelineRegs_1_cordic_x[15]}}, pipelineRegs_1_cordic_x[15:2]}),	// src/main/scala/CordicCore.scala:48:66, :105:{15,43}
-    .io_D (~sigma_2),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13, :101:19
+    .io_D (~sigma_2),	// src/main/scala/CordicCore.scala:69:41, :101:19
     .io_S (_adders_2_1_io_S)
   );
   AdderSubtractor adders_2_2 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_1_cordic_z),	// src/main/scala/CordicCore.scala:48:66
-    .io_B ({{4{_adders_2_2_io_B_T_1[11]}}, _adders_2_2_io_B_T_1}),	// src/main/scala/CordicCore.scala:117:{23,29}
-    .io_D (sigma_2),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13
+    .io_B (16'h3EB),	// src/main/scala/CordicCore.scala:117:23
+    .io_D (sigma_2),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_2_2_io_S)
   );
   AdderSubtractor adders_3_0 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_2_cordic_x),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{3{pipelineRegs_2_cordic_y[15]}}, pipelineRegs_2_cordic_y[15:3]}),	// src/main/scala/CordicCore.scala:48:66, :106:{15,43}
-    .io_D (pipelineRegs_2_control_rotType ^ sigma_3),	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:13, :71:13, :100:19
+    .io_D (sigma_3),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_3_0_io_S)
   );
   AdderSubtractor adders_3_1 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_2_cordic_y),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{3{pipelineRegs_2_cordic_x[15]}}, pipelineRegs_2_cordic_x[15:3]}),	// src/main/scala/CordicCore.scala:48:66, :105:{15,43}
-    .io_D (~sigma_3),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13, :101:19
+    .io_D (~sigma_3),	// src/main/scala/CordicCore.scala:69:41, :101:19
     .io_S (_adders_3_1_io_S)
   );
   AdderSubtractor adders_3_2 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_2_cordic_z),	// src/main/scala/CordicCore.scala:48:66
-    .io_B ({{5{_adders_3_2_io_B_T_1[10]}}, _adders_3_2_io_B_T_1}),	// src/main/scala/CordicCore.scala:117:{23,29}
-    .io_D (sigma_3),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13
+    .io_B (16'h1FD),	// src/main/scala/CordicCore.scala:117:23
+    .io_D (sigma_3),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_3_2_io_S)
   );
   AdderSubtractor adders_4_0 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_3_cordic_x),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{4{pipelineRegs_3_cordic_y[15]}}, pipelineRegs_3_cordic_y[15:4]}),	// src/main/scala/CordicCore.scala:48:66, :106:{15,43}
-    .io_D (pipelineRegs_3_control_rotType ^ sigma_4),	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:13, :71:13, :100:19
+    .io_D (sigma_4),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_4_0_io_S)
   );
   AdderSubtractor adders_4_1 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_3_cordic_y),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{4{pipelineRegs_3_cordic_x[15]}}, pipelineRegs_3_cordic_x[15:4]}),	// src/main/scala/CordicCore.scala:48:66, :105:{15,43}
-    .io_D (~sigma_4),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13, :101:19
+    .io_D (~sigma_4),	// src/main/scala/CordicCore.scala:69:41, :101:19
     .io_S (_adders_4_1_io_S)
   );
   AdderSubtractor adders_4_2 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_3_cordic_z),	// src/main/scala/CordicCore.scala:48:66
-    .io_B ({{6{_adders_4_2_io_B_T_1[9]}}, _adders_4_2_io_B_T_1}),	// src/main/scala/CordicCore.scala:117:{23,29}
-    .io_D (sigma_4),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13
+    .io_B (16'hFF),	// src/main/scala/CordicCore.scala:117:23
+    .io_D (sigma_4),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_4_2_io_S)
   );
   AdderSubtractor adders_5_0 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_4_cordic_x),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{4{pipelineRegs_4_cordic_y[15]}}, pipelineRegs_4_cordic_y[15:4]}),	// src/main/scala/CordicCore.scala:48:66, :106:{15,43}
-    .io_D (pipelineRegs_4_control_rotType ^ sigma_5),	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:13, :71:13, :100:19
+    .io_D (sigma_5),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_5_0_io_S)
   );
   AdderSubtractor adders_5_1 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_4_cordic_y),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{4{pipelineRegs_4_cordic_x[15]}}, pipelineRegs_4_cordic_x[15:4]}),	// src/main/scala/CordicCore.scala:48:66, :105:{15,43}
-    .io_D (~sigma_5),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13, :101:19
+    .io_D (~sigma_5),	// src/main/scala/CordicCore.scala:69:41, :101:19
     .io_S (_adders_5_1_io_S)
   );
   AdderSubtractor adders_5_2 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_4_cordic_z),	// src/main/scala/CordicCore.scala:48:66
-    .io_B ({{6{_adders_5_2_io_B_T_1[9]}}, _adders_5_2_io_B_T_1}),	// src/main/scala/CordicCore.scala:117:{23,29}
-    .io_D (sigma_5),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13
+    .io_B (16'hFF),	// src/main/scala/CordicCore.scala:117:23
+    .io_D (sigma_5),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_5_2_io_S)
   );
   AdderSubtractor adders_6_0 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_5_cordic_x),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{5{pipelineRegs_5_cordic_y[15]}}, pipelineRegs_5_cordic_y[15:5]}),	// src/main/scala/CordicCore.scala:48:66, :106:{15,43}
-    .io_D (pipelineRegs_5_control_rotType ^ sigma_6),	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:13, :71:13, :100:19
+    .io_D (sigma_6),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_6_0_io_S)
   );
   AdderSubtractor adders_6_1 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_5_cordic_y),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{5{pipelineRegs_5_cordic_x[15]}}, pipelineRegs_5_cordic_x[15:5]}),	// src/main/scala/CordicCore.scala:48:66, :105:{15,43}
-    .io_D (~sigma_6),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13, :101:19
+    .io_D (~sigma_6),	// src/main/scala/CordicCore.scala:69:41, :101:19
     .io_S (_adders_6_1_io_S)
   );
   AdderSubtractor adders_6_2 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_5_cordic_z),	// src/main/scala/CordicCore.scala:48:66
-    .io_B ({{7{_adders_6_2_io_B_T_1[8]}}, _adders_6_2_io_B_T_1}),	// src/main/scala/CordicCore.scala:117:{23,29}
-    .io_D (sigma_6),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13
+    .io_B (16'h7F),	// src/main/scala/CordicCore.scala:117:23
+    .io_D (sigma_6),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_6_2_io_S)
   );
   AdderSubtractor adders_7_0 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_6_cordic_x),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{6{pipelineRegs_6_cordic_y[15]}}, pipelineRegs_6_cordic_y[15:6]}),	// src/main/scala/CordicCore.scala:48:66, :106:{15,43}
-    .io_D (pipelineRegs_6_control_rotType ^ sigma_7),	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:13, :71:13, :100:19
+    .io_D (sigma_7),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_7_0_io_S)
   );
   AdderSubtractor adders_7_1 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_6_cordic_y),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{6{pipelineRegs_6_cordic_x[15]}}, pipelineRegs_6_cordic_x[15:6]}),	// src/main/scala/CordicCore.scala:48:66, :105:{15,43}
-    .io_D (~sigma_7),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13, :101:19
+    .io_D (~sigma_7),	// src/main/scala/CordicCore.scala:69:41, :101:19
     .io_S (_adders_7_1_io_S)
   );
   AdderSubtractor adders_7_2 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_6_cordic_z),	// src/main/scala/CordicCore.scala:48:66
-    .io_B ({{8{_adders_7_2_io_B_T_1[7]}}, _adders_7_2_io_B_T_1}),	// src/main/scala/CordicCore.scala:117:{23,29}
-    .io_D (sigma_7),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13
+    .io_B (16'h3F),	// src/main/scala/CordicCore.scala:117:23
+    .io_D (sigma_7),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_7_2_io_S)
   );
   AdderSubtractor adders_8_0 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_7_cordic_x),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{7{pipelineRegs_7_cordic_y[15]}}, pipelineRegs_7_cordic_y[15:7]}),	// src/main/scala/CordicCore.scala:48:66, :106:{15,43}
-    .io_D (pipelineRegs_7_control_rotType ^ sigma_8),	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:13, :71:13, :100:19
+    .io_D (sigma_8),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_8_0_io_S)
   );
   AdderSubtractor adders_8_1 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_7_cordic_y),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{7{pipelineRegs_7_cordic_x[15]}}, pipelineRegs_7_cordic_x[15:7]}),	// src/main/scala/CordicCore.scala:48:66, :105:{15,43}
-    .io_D (~sigma_8),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13, :101:19
+    .io_D (~sigma_8),	// src/main/scala/CordicCore.scala:69:41, :101:19
     .io_S (_adders_8_1_io_S)
   );
   AdderSubtractor adders_8_2 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_7_cordic_z),	// src/main/scala/CordicCore.scala:48:66
-    .io_B ({{9{_adders_8_2_io_B_T_1[6]}}, _adders_8_2_io_B_T_1}),	// src/main/scala/CordicCore.scala:117:{23,29}
-    .io_D (sigma_8),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13
+    .io_B (16'h1F),	// src/main/scala/CordicCore.scala:117:23
+    .io_D (sigma_8),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_8_2_io_S)
   );
   AdderSubtractor adders_9_0 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_8_cordic_x),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{8{pipelineRegs_8_cordic_y[15]}}, pipelineRegs_8_cordic_y[15:8]}),	// src/main/scala/CordicCore.scala:48:66, :106:{15,43}
-    .io_D (pipelineRegs_8_control_rotType ^ sigma_9),	// src/main/scala/CordicCore.scala:48:66, :68:64, :69:13, :71:13, :100:19
+    .io_D (sigma_9),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_9_0_io_S)
   );
   AdderSubtractor adders_9_1 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_8_cordic_y),	// src/main/scala/CordicCore.scala:48:66
     .io_B ({{8{pipelineRegs_8_cordic_x[15]}}, pipelineRegs_8_cordic_x[15:8]}),	// src/main/scala/CordicCore.scala:48:66, :105:{15,43}
-    .io_D (~sigma_9),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13, :101:19
+    .io_D (~sigma_9),	// src/main/scala/CordicCore.scala:69:41, :101:19
     .io_S (_adders_9_1_io_S)
   );
   AdderSubtractor adders_9_2 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_8_cordic_z),	// src/main/scala/CordicCore.scala:48:66
-    .io_B ({{10{_adders_9_2_io_B_T_1[5]}}, _adders_9_2_io_B_T_1}),	// src/main/scala/CordicCore.scala:117:{23,29}
-    .io_D (sigma_9),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13
+    .io_B (16'hF),	// src/main/scala/CordicCore.scala:117:23
+    .io_D (sigma_9),	// src/main/scala/CordicCore.scala:69:41
     .io_S (_adders_9_2_io_S)
   );
   AdderSubtractor adders_10_0 (	// src/main/scala/CordicCore.scala:44:60
@@ -965,7 +805,7 @@ module CordicCore(	// <stdin>:11540:3
   );
   AdderSubtractor adders_14_2 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_13_cordic_z),	// src/main/scala/CordicCore.scala:48:66
-    .io_B (16'h0),	// src/main/scala/CordicCore.scala:107:15
+    .io_B (16'h0),	// src/main/scala/CordicCore.scala:23:14, :44:60
     .io_D (sigma_14),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13
     .io_S (_adders_14_2_io_S)
   );
@@ -983,85 +823,107 @@ module CordicCore(	// <stdin>:11540:3
   );
   AdderSubtractor adders_15_2 (	// src/main/scala/CordicCore.scala:44:60
     .io_A (pipelineRegs_14_cordic_z),	// src/main/scala/CordicCore.scala:48:66
-    .io_B (16'h0),	// src/main/scala/CordicCore.scala:107:15
+    .io_B (16'h0),	// src/main/scala/CordicCore.scala:23:14, :44:60
     .io_D (sigma_15),	// src/main/scala/CordicCore.scala:68:64, :69:13, :71:13
     .io_S (_adders_15_2_io_S)
   );
-  assign io_out_valid = validRegs_15;	// <stdin>:11540:3, src/main/scala/CordicCore.scala:49:64
-  assign io_out_bits_cordic_x = pipelineRegs_15_cordic_x;	// <stdin>:11540:3, src/main/scala/CordicCore.scala:48:66
-  assign io_out_bits_cordic_y = pipelineRegs_15_cordic_y;	// <stdin>:11540:3, src/main/scala/CordicCore.scala:48:66
-  assign io_out_bits_cordic_z = pipelineRegs_15_cordic_z;	// <stdin>:11540:3, src/main/scala/CordicCore.scala:48:66
-  assign io_out_bits_control_op = pipelineRegs_15_control_op;	// <stdin>:11540:3, src/main/scala/CordicCore.scala:48:66
-  assign io_out_bits_control_xOpSpecific = pipelineRegs_15_control_xOpSpecific;	// <stdin>:11540:3, src/main/scala/CordicCore.scala:48:66
-  assign io_out_bits_control_yOpSpecific = pipelineRegs_15_control_yOpSpecific;	// <stdin>:11540:3, src/main/scala/CordicCore.scala:48:66
+  assign io_out_valid = validRegs_15;	// <stdin>:11437:3, src/main/scala/CordicCore.scala:49:64
+  assign io_out_bits_cordic_x = pipelineRegs_15_cordic_x;	// <stdin>:11437:3, src/main/scala/CordicCore.scala:48:66
+  assign io_out_bits_cordic_y = pipelineRegs_15_cordic_y;	// <stdin>:11437:3, src/main/scala/CordicCore.scala:48:66
+  assign io_out_bits_cordic_z = pipelineRegs_15_cordic_z;	// <stdin>:11437:3, src/main/scala/CordicCore.scala:48:66
+  assign io_out_bits_control_op = pipelineRegs_15_control_op;	// <stdin>:11437:3, src/main/scala/CordicCore.scala:48:66
+  assign io_out_bits_control_xOpSpecific = pipelineRegs_15_control_xOpSpecific;	// <stdin>:11437:3, src/main/scala/CordicCore.scala:48:66
+  assign io_out_bits_control_yOpSpecific = pipelineRegs_15_control_yOpSpecific;	// <stdin>:11437:3, src/main/scala/CordicCore.scala:48:66
 endmodule
 
-module CordicAccelerator(	// <stdin>:12934:3
-  input         clock,	// <stdin>:12935:11
-                reset,	// <stdin>:12936:11
-                io_in_valid,	// src/main/scala/CordicAccelerator.scala:32:14
-  input  [15:0] io_in_bits_rs1,	// src/main/scala/CordicAccelerator.scala:32:14
-                io_in_bits_rs2,	// src/main/scala/CordicAccelerator.scala:32:14
-                io_in_bits_rs3,	// src/main/scala/CordicAccelerator.scala:32:14
-  input  [4:0]  io_in_bits_op,	// src/main/scala/CordicAccelerator.scala:32:14
-  output        io_out_valid,	// src/main/scala/CordicAccelerator.scala:32:14
-  output [15:0] io_out_bits_cordic_x,	// src/main/scala/CordicAccelerator.scala:32:14
-                io_out_bits_cordic_y,	// src/main/scala/CordicAccelerator.scala:32:14
-                io_out_bits_cordic_z,	// src/main/scala/CordicAccelerator.scala:32:14
-                io_out_bits_dOut	// src/main/scala/CordicAccelerator.scala:32:14
+module CordicAccelerator(	// <stdin>:12831:3
+  input         clock,	// <stdin>:12832:11
+                reset,	// <stdin>:12833:11
+                io_in_valid,	// src/main/scala/CordicAccelerator.scala:33:14
+  input  [15:0] io_in_bits_rs1,	// src/main/scala/CordicAccelerator.scala:33:14
+                io_in_bits_rs2,	// src/main/scala/CordicAccelerator.scala:33:14
+                io_in_bits_rs3,	// src/main/scala/CordicAccelerator.scala:33:14
+  input  [4:0]  io_in_bits_op,	// src/main/scala/CordicAccelerator.scala:33:14
+  output        io_out_valid,	// src/main/scala/CordicAccelerator.scala:33:14
+  output [15:0] io_out_bits_cordic_x,	// src/main/scala/CordicAccelerator.scala:33:14
+                io_out_bits_cordic_y,	// src/main/scala/CordicAccelerator.scala:33:14
+                io_out_bits_cordic_z,	// src/main/scala/CordicAccelerator.scala:33:14
+                io_out_bits_dOut	// src/main/scala/CordicAccelerator.scala:33:14
 );
 
-  wire [15:0] _cordicCore_io_out_bits_cordic_x;	// src/main/scala/CordicAccelerator.scala:36:29
-  wire [15:0] _cordicCore_io_out_bits_cordic_y;	// src/main/scala/CordicAccelerator.scala:36:29
-  wire [15:0] _cordicCore_io_out_bits_cordic_z;	// src/main/scala/CordicAccelerator.scala:36:29
-  wire [4:0]  _cordicCore_io_out_bits_control_op;	// src/main/scala/CordicAccelerator.scala:36:29
-  wire [3:0]  _cordicCore_io_out_bits_control_xOpSpecific;	// src/main/scala/CordicAccelerator.scala:36:29
-  wire [3:0]  _cordicCore_io_out_bits_control_yOpSpecific;	// src/main/scala/CordicAccelerator.scala:36:29
-  wire [15:0] _preprocessor_io_out_cordic_x;	// src/main/scala/CordicAccelerator.scala:34:29
-  wire [15:0] _preprocessor_io_out_cordic_y;	// src/main/scala/CordicAccelerator.scala:34:29
-  wire [15:0] _preprocessor_io_out_cordic_z;	// src/main/scala/CordicAccelerator.scala:34:29
-  wire        _preprocessor_io_out_control_rotType;	// src/main/scala/CordicAccelerator.scala:34:29
-  wire        _preprocessor_io_out_control_mode;	// src/main/scala/CordicAccelerator.scala:34:29
-  wire [4:0]  _preprocessor_io_out_control_op;	// src/main/scala/CordicAccelerator.scala:34:29
-  wire [3:0]  _preprocessor_io_out_control_xOpSpecific;	// src/main/scala/CordicAccelerator.scala:34:29
-  wire [3:0]  _preprocessor_io_out_control_yOpSpecific;	// src/main/scala/CordicAccelerator.scala:34:29
-  CordicPreprocessor preprocessor (	// src/main/scala/CordicAccelerator.scala:34:29
-    .io_in_rs1                  (io_in_bits_rs1),
-    .io_in_op                   (io_in_bits_op),
+  wire        _cordicCore_io_out_valid;	// src/main/scala/CordicAccelerator.scala:37:29
+  wire [15:0] _cordicCore_io_out_bits_cordic_x;	// src/main/scala/CordicAccelerator.scala:37:29
+  wire [15:0] _cordicCore_io_out_bits_cordic_y;	// src/main/scala/CordicAccelerator.scala:37:29
+  wire [15:0] _cordicCore_io_out_bits_cordic_z;	// src/main/scala/CordicAccelerator.scala:37:29
+  wire [4:0]  _cordicCore_io_out_bits_control_op;	// src/main/scala/CordicAccelerator.scala:37:29
+  wire [3:0]  _cordicCore_io_out_bits_control_xOpSpecific;	// src/main/scala/CordicAccelerator.scala:37:29
+  wire [3:0]  _cordicCore_io_out_bits_control_yOpSpecific;	// src/main/scala/CordicAccelerator.scala:37:29
+  wire [15:0] _postprocessor_io_out_cordic_x;	// src/main/scala/CordicAccelerator.scala:36:29
+  wire [15:0] _postprocessor_io_out_cordic_y;	// src/main/scala/CordicAccelerator.scala:36:29
+  wire [15:0] _postprocessor_io_out_cordic_z;	// src/main/scala/CordicAccelerator.scala:36:29
+  wire [15:0] _postprocessor_io_out_dOut;	// src/main/scala/CordicAccelerator.scala:36:29
+  wire [15:0] _preprocessor_io_out_cordic_x;	// src/main/scala/CordicAccelerator.scala:35:29
+  wire [15:0] _preprocessor_io_out_cordic_z;	// src/main/scala/CordicAccelerator.scala:35:29
+  wire [4:0]  _preprocessor_io_out_control_op;	// src/main/scala/CordicAccelerator.scala:35:29
+  wire [3:0]  _preprocessor_io_out_control_xOpSpecific;	// src/main/scala/CordicAccelerator.scala:35:29
+  wire [3:0]  _preprocessor_io_out_control_yOpSpecific;	// src/main/scala/CordicAccelerator.scala:35:29
+  reg  [15:0] inRegs_rs1;	// src/main/scala/CordicAccelerator.scala:39:30
+  reg  [4:0]  inRegs_op;	// src/main/scala/CordicAccelerator.scala:39:30
+  reg  [15:0] outRegs_cordic_x;	// src/main/scala/CordicAccelerator.scala:40:30
+  reg  [15:0] outRegs_cordic_y;	// src/main/scala/CordicAccelerator.scala:40:30
+  reg  [15:0] outRegs_cordic_z;	// src/main/scala/CordicAccelerator.scala:40:30
+  reg  [15:0] outRegs_dOut;	// src/main/scala/CordicAccelerator.scala:40:30
+  reg         inValidReg;	// src/main/scala/CordicAccelerator.scala:41:28
+  reg         outValidReg;	// src/main/scala/CordicAccelerator.scala:42:28
+  always @(posedge clock) begin	// <stdin>:12832:11
+    if (io_in_valid) begin	// src/main/scala/CordicAccelerator.scala:33:14
+      inRegs_rs1 <= io_in_bits_rs1;	// src/main/scala/CordicAccelerator.scala:39:30
+      inRegs_op <= io_in_bits_op;	// src/main/scala/CordicAccelerator.scala:39:30
+    end
+    outRegs_cordic_x <= _postprocessor_io_out_cordic_x;	// src/main/scala/CordicAccelerator.scala:36:29, :40:30
+    outRegs_cordic_y <= _postprocessor_io_out_cordic_y;	// src/main/scala/CordicAccelerator.scala:36:29, :40:30
+    outRegs_cordic_z <= _postprocessor_io_out_cordic_z;	// src/main/scala/CordicAccelerator.scala:36:29, :40:30
+    outRegs_dOut <= _postprocessor_io_out_dOut;	// src/main/scala/CordicAccelerator.scala:36:29, :40:30
+    if (reset) begin	// <stdin>:12832:11
+      inValidReg <= 1'h0;	// src/main/scala/CordicAccelerator.scala:39:30, :41:28
+      outValidReg <= 1'h0;	// src/main/scala/CordicAccelerator.scala:39:30, :42:28
+    end
+    else begin	// <stdin>:12832:11
+      inValidReg <= io_in_valid;	// src/main/scala/CordicAccelerator.scala:41:28
+      outValidReg <= _cordicCore_io_out_valid;	// src/main/scala/CordicAccelerator.scala:37:29, :42:28
+    end
+  end // always @(posedge)
+  CordicPreprocessor preprocessor (	// src/main/scala/CordicAccelerator.scala:35:29
+    .io_in_rs1                  (inRegs_rs1),	// src/main/scala/CordicAccelerator.scala:39:30
+    .io_in_op                   (inRegs_op),	// src/main/scala/CordicAccelerator.scala:39:30
     .io_out_cordic_x            (_preprocessor_io_out_cordic_x),
-    .io_out_cordic_y            (_preprocessor_io_out_cordic_y),
     .io_out_cordic_z            (_preprocessor_io_out_cordic_z),
-    .io_out_control_rotType     (_preprocessor_io_out_control_rotType),
-    .io_out_control_mode        (_preprocessor_io_out_control_mode),
     .io_out_control_op          (_preprocessor_io_out_control_op),
     .io_out_control_xOpSpecific (_preprocessor_io_out_control_xOpSpecific),
     .io_out_control_yOpSpecific (_preprocessor_io_out_control_yOpSpecific)
   );
-  CordicPostprocessor postprocessor (	// src/main/scala/CordicAccelerator.scala:35:29
-    .io_in_cordic_x            (_cordicCore_io_out_bits_cordic_x),	// src/main/scala/CordicAccelerator.scala:36:29
-    .io_in_cordic_y            (_cordicCore_io_out_bits_cordic_y),	// src/main/scala/CordicAccelerator.scala:36:29
-    .io_in_cordic_z            (_cordicCore_io_out_bits_cordic_z),	// src/main/scala/CordicAccelerator.scala:36:29
-    .io_in_control_op          (_cordicCore_io_out_bits_control_op),	// src/main/scala/CordicAccelerator.scala:36:29
-    .io_in_control_xOpSpecific (_cordicCore_io_out_bits_control_xOpSpecific),	// src/main/scala/CordicAccelerator.scala:36:29
-    .io_in_control_yOpSpecific (_cordicCore_io_out_bits_control_yOpSpecific),	// src/main/scala/CordicAccelerator.scala:36:29
-    .io_out_cordic_x           (io_out_bits_cordic_x),
-    .io_out_cordic_y           (io_out_bits_cordic_y),
-    .io_out_cordic_z           (io_out_bits_cordic_z),
-    .io_out_dOut               (io_out_bits_dOut)
+  CordicPostprocessor postprocessor (	// src/main/scala/CordicAccelerator.scala:36:29
+    .io_in_cordic_x            (_cordicCore_io_out_bits_cordic_x),	// src/main/scala/CordicAccelerator.scala:37:29
+    .io_in_cordic_y            (_cordicCore_io_out_bits_cordic_y),	// src/main/scala/CordicAccelerator.scala:37:29
+    .io_in_cordic_z            (_cordicCore_io_out_bits_cordic_z),	// src/main/scala/CordicAccelerator.scala:37:29
+    .io_in_control_op          (_cordicCore_io_out_bits_control_op),	// src/main/scala/CordicAccelerator.scala:37:29
+    .io_in_control_xOpSpecific (_cordicCore_io_out_bits_control_xOpSpecific),	// src/main/scala/CordicAccelerator.scala:37:29
+    .io_in_control_yOpSpecific (_cordicCore_io_out_bits_control_yOpSpecific),	// src/main/scala/CordicAccelerator.scala:37:29
+    .io_out_cordic_x           (_postprocessor_io_out_cordic_x),
+    .io_out_cordic_y           (_postprocessor_io_out_cordic_y),
+    .io_out_cordic_z           (_postprocessor_io_out_cordic_z),
+    .io_out_dOut               (_postprocessor_io_out_dOut)
   );
-  CordicCore cordicCore (	// src/main/scala/CordicAccelerator.scala:36:29
+  CordicCore cordicCore (	// src/main/scala/CordicAccelerator.scala:37:29
     .clock                           (clock),
     .reset                           (reset),
-    .io_in_valid                     (io_in_valid),
-    .io_in_bits_cordic_x             (_preprocessor_io_out_cordic_x),	// src/main/scala/CordicAccelerator.scala:34:29
-    .io_in_bits_cordic_y             (_preprocessor_io_out_cordic_y),	// src/main/scala/CordicAccelerator.scala:34:29
-    .io_in_bits_cordic_z             (_preprocessor_io_out_cordic_z),	// src/main/scala/CordicAccelerator.scala:34:29
-    .io_in_bits_control_rotType      (_preprocessor_io_out_control_rotType),	// src/main/scala/CordicAccelerator.scala:34:29
-    .io_in_bits_control_mode         (_preprocessor_io_out_control_mode),	// src/main/scala/CordicAccelerator.scala:34:29
-    .io_in_bits_control_op           (_preprocessor_io_out_control_op),	// src/main/scala/CordicAccelerator.scala:34:29
-    .io_in_bits_control_xOpSpecific  (_preprocessor_io_out_control_xOpSpecific),	// src/main/scala/CordicAccelerator.scala:34:29
-    .io_in_bits_control_yOpSpecific  (_preprocessor_io_out_control_yOpSpecific),	// src/main/scala/CordicAccelerator.scala:34:29
-    .io_out_valid                    (io_out_valid),
+    .io_in_valid                     (inValidReg),	// src/main/scala/CordicAccelerator.scala:41:28
+    .io_in_bits_cordic_x             (_preprocessor_io_out_cordic_x),	// src/main/scala/CordicAccelerator.scala:35:29
+    .io_in_bits_cordic_z             (_preprocessor_io_out_cordic_z),	// src/main/scala/CordicAccelerator.scala:35:29
+    .io_in_bits_control_op           (_preprocessor_io_out_control_op),	// src/main/scala/CordicAccelerator.scala:35:29
+    .io_in_bits_control_xOpSpecific  (_preprocessor_io_out_control_xOpSpecific),	// src/main/scala/CordicAccelerator.scala:35:29
+    .io_in_bits_control_yOpSpecific  (_preprocessor_io_out_control_yOpSpecific),	// src/main/scala/CordicAccelerator.scala:35:29
+    .io_out_valid                    (_cordicCore_io_out_valid),
     .io_out_bits_cordic_x            (_cordicCore_io_out_bits_cordic_x),
     .io_out_bits_cordic_y            (_cordicCore_io_out_bits_cordic_y),
     .io_out_bits_cordic_z            (_cordicCore_io_out_bits_cordic_z),
@@ -1069,5 +931,10 @@ module CordicAccelerator(	// <stdin>:12934:3
     .io_out_bits_control_xOpSpecific (_cordicCore_io_out_bits_control_xOpSpecific),
     .io_out_bits_control_yOpSpecific (_cordicCore_io_out_bits_control_yOpSpecific)
   );
+  assign io_out_valid = outValidReg;	// <stdin>:12831:3, src/main/scala/CordicAccelerator.scala:42:28
+  assign io_out_bits_cordic_x = outRegs_cordic_x;	// <stdin>:12831:3, src/main/scala/CordicAccelerator.scala:40:30
+  assign io_out_bits_cordic_y = outRegs_cordic_y;	// <stdin>:12831:3, src/main/scala/CordicAccelerator.scala:40:30
+  assign io_out_bits_cordic_z = outRegs_cordic_z;	// <stdin>:12831:3, src/main/scala/CordicAccelerator.scala:40:30
+  assign io_out_bits_dOut = outRegs_dOut;	// <stdin>:12831:3, src/main/scala/CordicAccelerator.scala:40:30
 endmodule
 

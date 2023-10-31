@@ -10,6 +10,7 @@ import circt.stage.{ChiselStage, FirtoolOption}
 import chisel3.stage.ChiselGeneratorAnnotation
 import scopt.OParser
 import java.io.File
+import chisel3.util.RegEnable
 
 case class CordicAcceleratorIO(dataWidth: Int) extends Bundle {
 
@@ -35,19 +36,30 @@ class CordicAccelerator(val mantissaBits: Int, val fractionBits: Int, val iterat
   val postprocessor = Module(new CordicPostprocessor(mantissaBits, fractionBits, iterations, opList))
   val cordicCore    = Module(new CordicCore(mantissaBits, fractionBits, iterations))
 
-  preprocessor.io.in.rs1 := io.in.bits.rs1
-  preprocessor.io.in.rs2 := io.in.bits.rs2
-  preprocessor.io.in.rs3 := io.in.bits.rs3
-  preprocessor.io.in.op  := io.in.bits.op
+  val inRegs      = RegEnable(io.in.bits, io.in.valid)
+  val outRegs     = RegEnable(postprocessor.io.out, cordicCore.io.out.valid)
+  val inValidReg  = RegInit(false.B)
+  val outValidReg = RegInit(false.B)
+  inValidReg  := io.in.valid
+  outValidReg := io.out.valid
+
+  preprocessor.io.in.rs1 := inRegs.rs1
+  preprocessor.io.in.rs2 := inRegs.rs2
+  preprocessor.io.in.rs3 := inRegs.rs3
+  preprocessor.io.in.op  := inRegs.op
 
   cordicCore.io.in.bits  := preprocessor.io.out
-  cordicCore.io.in.valid := io.in.valid
+  cordicCore.io.in.valid := inValidReg
 
   postprocessor.io.in.cordic  := cordicCore.io.out.bits.cordic
   postprocessor.io.in.control := cordicCore.io.out.bits.control
 
-  io.out.bits  := postprocessor.io.out
-  io.out.valid := cordicCore.io.out.valid
+  outRegs.cordic  := postprocessor.io.out.cordic
+  outRegs.dOut    := postprocessor.io.out.dOut
+  outValidReg     := cordicCore.io.out.valid
+
+  io.out.bits  := outRegs
+  io.out.valid := outValidReg
 
 }
 
