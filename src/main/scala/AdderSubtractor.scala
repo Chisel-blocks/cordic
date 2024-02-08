@@ -1,7 +1,7 @@
 package accelerators
 
 import chisel3._
-import circt.stage.{ChiselStage, FirtoolOption}
+import chisel3.stage.{ChiselStage}
 import chisel3.stage.ChiselGeneratorAnnotation
 
 case class AdderSubtractorIO(bits: Int) extends Bundle {
@@ -42,6 +42,6 @@ object AdderSubtractor extends App {
   // These lines generate the Verilog output
   (new ChiselStage).execute(
     { Array("--target", "systemverilog") ++ args },
-    Seq(ChiselGeneratorAnnotation(() => new AdderSubtractor(16)), FirtoolOption("--disable-all-randomization"))
+    Seq(ChiselGeneratorAnnotation(() => new AdderSubtractor(16)))
   )
 }

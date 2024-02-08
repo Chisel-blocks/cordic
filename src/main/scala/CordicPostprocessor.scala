@@ -5,8 +5,9 @@
 package accelerators
 
 import chisel3._
+import chisel3.experimental._
 import chisel3.util.{MuxCase, log2Ceil}
-import circt.stage.{ChiselStage, FirtoolOption}
+import chisel3.stage.{ChiselStage}
 import chisel3.stage.ChiselGeneratorAnnotation
 
 case class CordicPostprocessorIO(dataWidth: Int) extends Bundle {
@@ -57,7 +58,7 @@ class CordicPostprocessor(val mantissaBits: Int, val fractionBits: Int, val iter
 object CordicPostprocessor extends App {
 
   // These lines generate the Verilog output
-  (new circt.stage.ChiselStage).execute(
+  (new ChiselStage).execute(
     { Array("--target", "systemverilog") ++ args },
     Seq(
       ChiselGeneratorAnnotation(() =>
@@ -71,7 +72,6 @@ object CordicPostprocessor extends App {
           )
         )
       ),
-      FirtoolOption("--disable-all-randomization")
     )
   )
 

@@ -6,7 +6,7 @@ ThisBuild / scalaVersion     := "2.13.8"
 ThisBuild / version          := scala.sys.process.Process("git rev-parse --short HEAD").!!.mkString.replaceAll("\\s", "")+"-SNAPSHOT"
 ThisBuild / organization     := "Chisel-blocks"
 
-val chiselVersion = "5.0.0"
+val chiselVersion = "3.5.1"
 
 resolvers += "A-Core Gitlab" at "https://gitlab.com/api/v4/groups/13348068/-/packages/maven"
 
@@ -14,7 +14,8 @@ lazy val CordicAccelerator = (project in file("."))
   .settings(
     name := "CordicAccelerator",
     libraryDependencies ++= Seq(
-      "org.chipsalliance" %% "chisel" % chiselVersion,
+      //"org.chipsalliance" %% "chisel" % chiselVersion,
+      "edu.berkeley.cs" %% "chisel3" % chiselVersion,
       "com.github.scopt" %% "scopt" % "4.1.0"
     ),
     scalacOptions ++= Seq(
@@ -24,7 +25,8 @@ lazy val CordicAccelerator = (project in file("."))
       "-Xcheckinit",
       "-Ymacro-annotations",
     ),
-    addCompilerPlugin("org.chipsalliance" % "chisel-plugin" % chiselVersion cross CrossVersion.full),
+    //addCompilerPlugin("org.chipsalliance" % "chisel-plugin" % chiselVersion cross CrossVersion.full),
+    addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % chiselVersion cross CrossVersion.full),
   )
 
 // Parse the version of a submodle from the git submodule status

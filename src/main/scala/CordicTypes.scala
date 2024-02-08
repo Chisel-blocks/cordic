@@ -2,6 +2,7 @@ package accelerators
 
 import chisel3._
 import chisel3.util._
+import chisel3.experimental._
 import scala.math.{atan, abs, floor, log, pow, sqrt}
 
 object TrigonometricOp extends ChiselEnum {

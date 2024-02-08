@@ -6,7 +6,7 @@ package accelerators
 
 import chisel3._
 import chisel3.util.{ValidIO, log2Ceil}
-import circt.stage.{ChiselStage, FirtoolOption}
+import chisel3.stage.{ChiselStage}
 import chisel3.stage.ChiselGeneratorAnnotation
 import scopt.OParser
 import java.io.File
@@ -109,8 +109,8 @@ object CordicAccelerator extends App {
         instance.asInstanceOf[CordicOp]
       })
       // These lines generate the Verilog output
-      (new circt.stage.ChiselStage).execute(
-        { Array("--target", "systemverilog") ++ Array("-td", config.td) },
+      (new ChiselStage).execute(
+        {Array("-td", config.td) },
         Seq(
           ChiselGeneratorAnnotation(() => {
             new CordicAccelerator(
@@ -120,7 +120,6 @@ object CordicAccelerator extends App {
               opList
             )
           }),
-          FirtoolOption("--disable-all-randomization")
         )
       )
     }

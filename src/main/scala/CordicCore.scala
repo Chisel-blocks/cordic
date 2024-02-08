@@ -2,7 +2,7 @@ package accelerators
 
 import chisel3._
 import chisel3.util.{ValidIO, RegEnable, Fill, Cat}
-import circt.stage.{ChiselStage, FirtoolOption}
+import chisel3.stage.{ChiselStage}
 import chisel3.stage.ChiselGeneratorAnnotation
 
 case class CordicCoreIO(dataWidth: Int) extends Bundle {
@@ -142,7 +142,7 @@ object CordicCore extends App {
   // These lines generate the Verilog output
   (new ChiselStage).execute(
     { Array("--target", "systemverilog") ++ args },
-    Seq(ChiselGeneratorAnnotation(() => new CordicCore(4, 12, 14)), FirtoolOption("--disable-all-randomization"))
+    Seq(ChiselGeneratorAnnotation(() => new CordicCore(4, 12, 14)))
   )
 
 }
