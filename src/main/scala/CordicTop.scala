@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-// Chisel module CordicAccelerator
+// Chisel module CordicTop
 // Inititally written by Aleksi Korsman (aleksi.korsman@aalto.fi), 2023-10-06
 package accelerators
 
@@ -12,7 +12,7 @@ import scopt.OParser
 import java.io.File
 import chisel3.util.RegEnable
 
-case class CordicAcceleratorIO(dataWidth: Int) extends Bundle {
+case class CordicTopIO(dataWidth: Int) extends Bundle {
 
   val in = Input(ValidIO(new Bundle {
     val rs1 = SInt(dataWidth.W)
@@ -28,9 +28,9 @@ case class CordicAcceleratorIO(dataWidth: Int) extends Bundle {
 
 }
 
-class CordicAccelerator(val mantissaBits: Int, val fractionBits: Int, val iterations: Int, opList: Seq[CordicOp])
+class CordicTop(val mantissaBits: Int, val fractionBits: Int, val iterations: Int, opList: Seq[CordicOp])
     extends Module {
-  val io = IO(CordicAcceleratorIO(mantissaBits + fractionBits))
+  val io = IO(CordicTopIO(mantissaBits + fractionBits))
 
   val preprocessor  = Module(new CordicPreprocessor(mantissaBits, fractionBits, iterations, opList))
   val postprocessor = Module(new CordicPostprocessor(mantissaBits, fractionBits, iterations, opList))
@@ -63,7 +63,7 @@ class CordicAccelerator(val mantissaBits: Int, val fractionBits: Int, val iterat
 
 }
 
-object CordicAccelerator extends App {
+object CordicTop extends App {
 
   case class Config(
       td: String = ".",
@@ -78,7 +78,7 @@ object CordicAccelerator extends App {
   val parser1 = {
     import builder._
     OParser.sequence(
-      programName("CordicAccelerator"),
+      programName("CordicTop"),
       opt[String]('t', "target-dir")
         .action((x, c) => c.copy(td = x))
         .text("Verilog target directory"),
@@ -113,7 +113,7 @@ object CordicAccelerator extends App {
         {Array("-td", config.td) },
         Seq(
           ChiselGeneratorAnnotation(() => {
-            new CordicAccelerator(
+            new CordicTop(
               config.mantissaBits,
               config.fractionBits,
               config.iterations,

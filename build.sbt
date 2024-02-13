@@ -10,9 +10,9 @@ val chiselVersion = "3.5.1"
 
 resolvers += "A-Core Gitlab" at "https://gitlab.com/api/v4/groups/13348068/-/packages/maven"
 
-lazy val CordicAccelerator = (project in file("."))
+lazy val CordicTop = (project in file("."))
   .settings(
-    name := "CordicAccelerator",
+    name := "CordicTop",
     libraryDependencies ++= Seq(
       //"org.chipsalliance" %% "chisel" % chiselVersion,
       "edu.berkeley.cs" %% "chisel3" % chiselVersion,
