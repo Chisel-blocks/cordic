@@ -59,7 +59,7 @@ object CordicPostprocessor extends App {
 
   // These lines generate the Verilog output
   (new ChiselStage).execute(
-    { Array("--target", "systemverilog") ++ args },
+    { Array() ++ args },
     Seq(
       ChiselGeneratorAnnotation(() =>
         new CordicPostprocessor(
