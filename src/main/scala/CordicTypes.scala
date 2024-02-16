@@ -1,4 +1,4 @@
-package accelerators
+package cordic
 
 import chisel3._
 import chisel3.util._
@@ -52,17 +52,8 @@ case class CordicCoreControl() extends Bundle {
   /** rotation/vectoring */
   val mode = CordicMode()
 
-  /** Operation code */
-  val op = UInt(5.W)
-
-  /** Cordic operation specific controls for x */
-  val xOpSpecific = UInt(4.W)
-
-  /** Cordic operation specific controls for y */
-  val yOpSpecific = UInt(4.W)
-
-  /** Cordic operation specific controls for z */
-  val zOpSpecific = UInt(4.W)
+  /** Custom control bits to transmit info between pre- and postprocessor */
+  val custom = UInt()
 }
 
 object CordicMethods {

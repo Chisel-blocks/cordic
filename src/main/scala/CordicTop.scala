@@ -2,7 +2,7 @@
 
 // Chisel module CordicTop
 // Inititally written by Aleksi Korsman (aleksi.korsman@aalto.fi), 2023-10-06
-package accelerators
+package cordic
 
 import chisel3._
 import chisel3.util.{ValidIO, log2Ceil}
@@ -15,10 +15,10 @@ import chisel3.util.RegEnable
 case class CordicTopIO(dataWidth: Int) extends Bundle {
 
   val in = Input(ValidIO(new Bundle {
-    val rs1 = SInt(dataWidth.W)
-    val rs2 = SInt(dataWidth.W)
-    val rs3 = SInt(dataWidth.W)
-    val op  = UInt(5.W)
+    val rs1     = SInt(dataWidth.W)
+    val rs2     = SInt(dataWidth.W)
+    val rs3     = SInt(dataWidth.W)
+    val control = UInt()
   }))
 
   val out = Output(ValidIO(new Bundle {
@@ -28,12 +28,12 @@ case class CordicTopIO(dataWidth: Int) extends Bundle {
 
 }
 
-class CordicTop(val mantissaBits: Int, val fractionBits: Int, val iterations: Int, opList: Seq[CordicOp])
+class CordicTop(val mantissaBits: Int, val fractionBits: Int, val iterations: Int)
     extends Module {
   val io = IO(CordicTopIO(mantissaBits + fractionBits))
 
-  val preprocessor  = Module(new CordicPreprocessor(mantissaBits, fractionBits, iterations, opList))
-  val postprocessor = Module(new CordicPostprocessor(mantissaBits, fractionBits, iterations, opList))
+  val preprocessor  = Module(new TrigFuncPreprocessor(mantissaBits, fractionBits, iterations))
+  val postprocessor = Module(new TrigFuncPostprocessor(mantissaBits, fractionBits, iterations))
   val cordicCore    = Module(new CordicCore(mantissaBits, fractionBits, iterations))
 
   val inRegs      = RegEnable(io.in.bits, io.in.valid)
@@ -43,10 +43,10 @@ class CordicTop(val mantissaBits: Int, val fractionBits: Int, val iterations: In
   inValidReg  := io.in.valid
   outValidReg := io.out.valid
 
-  preprocessor.io.in.rs1 := inRegs.rs1
-  preprocessor.io.in.rs2 := inRegs.rs2
-  preprocessor.io.in.rs3 := inRegs.rs3
-  preprocessor.io.in.op  := inRegs.op
+  preprocessor.io.in.rs1     := inRegs.rs1
+  preprocessor.io.in.rs2     := inRegs.rs2
+  preprocessor.io.in.rs3     := inRegs.rs3
+  preprocessor.io.in.control := inRegs.control
 
   cordicCore.io.in.bits  := preprocessor.io.out
   cordicCore.io.in.valid := inValidReg
@@ -117,7 +117,6 @@ object CordicTop extends App {
               config.mantissaBits,
               config.fractionBits,
               config.iterations,
-              opList
             )
           }),
         )
