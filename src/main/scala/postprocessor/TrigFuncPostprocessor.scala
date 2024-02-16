@@ -34,6 +34,36 @@ class TrigFuncPostprocessor(mantissaBits: Int, fractionBits: Int,
     io.out.cordic.y := io.in.cordic.y
     io.out.cordic.z := io.in.cordic.z
     io.out.dOut     := io.out.cordic.x
+  } .elsewhen(io.in.control.custom(31,2) === TrigOp.ARCTAN.asUInt) {
+    io.out.cordic.x := io.in.cordic.x
+    io.out.cordic.y := io.in.cordic.y
+    io.out.cordic.z := io.in.cordic.z
+    io.out.dOut     := io.out.cordic.z
+  } .elsewhen(io.in.control.custom(31,2) === TrigOp.SINH.asUInt) {
+    io.out.cordic.x := io.in.cordic.x
+    io.out.cordic.y := io.in.cordic.y
+    io.out.cordic.z := io.in.cordic.z
+    io.out.dOut     := io.out.cordic.y
+  } .elsewhen(io.in.control.custom(31,2) === TrigOp.COSH.asUInt) {
+    io.out.cordic.x := io.in.cordic.x
+    io.out.cordic.y := io.in.cordic.y
+    io.out.cordic.z := io.in.cordic.z
+    io.out.dOut     := io.out.cordic.x
+  } .elsewhen(io.in.control.custom(31,2) === TrigOp.ARCTANH.asUInt) {
+    io.out.cordic.x := io.in.cordic.x
+    io.out.cordic.y := io.in.cordic.y
+    io.out.cordic.z := io.in.cordic.z
+    io.out.dOut     := io.out.cordic.z
+  } .elsewhen(io.in.control.custom(31,2) === TrigOp.EXPONENTIAL.asUInt) {
+    io.out.cordic.x := io.in.cordic.x
+    io.out.cordic.y := io.in.cordic.y
+    io.out.cordic.z := io.in.cordic.z
+    io.out.dOut     := io.out.cordic.x
+  } .elsewhen(io.in.control.custom(31,2) === TrigOp.LOG.asUInt) {
+    io.out.cordic.x := io.in.cordic.x
+    io.out.cordic.y := io.in.cordic.y
+    io.out.cordic.z := io.in.cordic.z
+    io.out.dOut     := io.out.cordic.z << 1
   } .otherwise {
     io.out.cordic.x := DontCare
     io.out.cordic.y := DontCare

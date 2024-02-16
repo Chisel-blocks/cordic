@@ -35,21 +35,74 @@ class TrigFuncPreprocessor(mantissaBits: Int, fractionBits: Int,
   val largerThanPiOver2     = io.in.rs1 > consts.pPiOver2
   val smallerThanNegPiOver2 = io.in.rs1 < consts.nPiOver2
 
-  val addPi = io.in.rs1 + consts.pPi
-  val subPi = io.in.rs1 - consts.pPi
+  val addA = WireDefault(0.S)
+  val addB = WireDefault(0.S)
+  val subA = WireDefault(0.S)
+  val subB = WireDefault(0.S)
+
+  when ((io.in.control === TrigOp.SINE.asUInt) || (io.in.control === TrigOp.COSINE.asUInt)) {
+    addA := io.in.rs1
+    addB := consts.pPi
+    subA := io.in.rs1
+    subB := consts.pPi
+  } .elsewhen (io.in.control === TrigOp.LOG.asUInt) {
+    addA := io.in.rs1
+    addB := CordicMethods.toFixedPoint(1.0, mantissaBits, fractionBits)
+    subA := io.in.rs1
+    subB := CordicMethods.toFixedPoint(1.0, mantissaBits, fractionBits)
+  }
+
+  val adder = addA + addB
+  val subtractor = subA - subB
 
   when (io.in.control === TrigOp.SINE.asUInt) {
     io.out.cordic.x := consts.K
     io.out.cordic.y := 0.S
-    io.out.cordic.z := MuxCase(io.in.rs1, Seq(largerThanPiOver2 -> subPi, smallerThanNegPiOver2 -> addPi))
+    io.out.cordic.z := MuxCase(io.in.rs1, Seq(largerThanPiOver2 -> subtractor, smallerThanNegPiOver2 -> adder))
     io.out.control.rotType := CordicRotationType.CIRCULAR
     io.out.control.mode := CordicMode.ROTATION
   } .elsewhen (io.in.control === TrigOp.COSINE.asUInt) {
     io.out.cordic.x := consts.K
     io.out.cordic.y := 0.S
-    io.out.cordic.z := MuxCase(io.in.rs1, Seq(largerThanPiOver2 -> subPi, smallerThanNegPiOver2 -> addPi))
+    io.out.cordic.z := MuxCase(io.in.rs1, Seq(largerThanPiOver2 -> subtractor, smallerThanNegPiOver2 -> adder))
     io.out.control.rotType := CordicRotationType.CIRCULAR
     io.out.control.mode := CordicMode.ROTATION
+  } .elsewhen (io.in.control === TrigOp.ARCTAN.asUInt) {
+    io.out.cordic.x := CordicMethods.toFixedPoint(1.0, mantissaBits, fractionBits)
+    io.out.cordic.y := io.in.rs1
+    io.out.cordic.z := 0.S
+    io.out.control.rotType := CordicRotationType.CIRCULAR
+    io.out.control.mode := CordicMode.VECTORING
+  } .elsewhen (io.in.control === TrigOp.SINH.asUInt) {
+    io.out.cordic.x := consts.Kh
+    io.out.cordic.y := 0.S
+    io.out.cordic.z := io.in.rs1
+    io.out.control.rotType := CordicRotationType.HYPERBOLIC
+    io.out.control.mode := CordicMode.ROTATION
+  } .elsewhen (io.in.control === TrigOp.COSH.asUInt) {
+    io.out.cordic.x := consts.Kh
+    io.out.cordic.y := 0.S
+    io.out.cordic.z := io.in.rs1
+    io.out.control.rotType := CordicRotationType.HYPERBOLIC
+    io.out.control.mode := CordicMode.ROTATION
+  } .elsewhen (io.in.control === TrigOp.ARCTANH.asUInt) {
+    io.out.cordic.x := CordicMethods.toFixedPoint(1.0, mantissaBits, fractionBits)
+    io.out.cordic.y := io.in.rs1
+    io.out.cordic.z := 0.S
+    io.out.control.rotType := CordicRotationType.HYPERBOLIC
+    io.out.control.mode := CordicMode.VECTORING
+  } .elsewhen (io.in.control === TrigOp.EXPONENTIAL.asUInt) {
+    io.out.cordic.x := consts.Kh
+    io.out.cordic.y := consts.Kh
+    io.out.cordic.z := io.in.rs1
+    io.out.control.rotType := CordicRotationType.HYPERBOLIC
+    io.out.control.mode := CordicMode.ROTATION
+  } .elsewhen (io.in.control === TrigOp.LOG.asUInt) {
+    io.out.cordic.x := adder
+    io.out.cordic.y := subtractor
+    io.out.cordic.z := 0.S
+    io.out.control.rotType := CordicRotationType.HYPERBOLIC
+    io.out.control.mode := CordicMode.VECTORING
   } .otherwise {
     io.out.cordic.x := DontCare
     io.out.cordic.y := DontCare
