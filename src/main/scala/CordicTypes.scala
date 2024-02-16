@@ -5,17 +5,6 @@ import chisel3.util._
 import chisel3.experimental._
 import scala.math.{atan, abs, floor, log, pow, sqrt}
 
-object TrigonometricOp extends ChiselEnum {
-  val SINE        = Value(0.U)
-  val COSINE      = Value(1.U)
-  val ARCTAN      = Value(2.U)
-  val SINH        = Value(3.U)
-  val COSH        = Value(4.U)
-  val ARCTANH     = Value(5.U)
-  val EXPONENTIAL = Value(6.U)
-  val LOG         = Value(7.U)
-}
-
 object CordicConstants {
   val hyperbolicRepeatIndices = Seq(4, 13, 40)
 }
@@ -34,14 +23,6 @@ object CordicMode extends ChiselEnum {
 object CordicRotationType extends ChiselEnum {
   val CIRCULAR   = Value(0.U)
   val HYPERBOLIC = Value(1.U)
-}
-
-object CordicRegister extends ChiselEnum {
-  val rs1, rs2, rs3 = Value
-}
-
-object CordicResultRegister extends ChiselEnum {
-  val x, y, z = Value
 }
 
 case class CordicCoreControl() extends Bundle {

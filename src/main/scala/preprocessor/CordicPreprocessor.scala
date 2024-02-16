@@ -13,14 +13,20 @@ import chisel3.stage.ChiselGeneratorAnnotation
 case class CordicPreprocessorIO(dataWidth: Int) extends Bundle {
 
   val in = new Bundle {
+    /** Source register 1 */
     val rs1     = Input(SInt(dataWidth.W))
+    /** Source register 2 */
     val rs2     = Input(SInt(dataWidth.W))
+    /** Source register 3 */
     val rs3     = Input(SInt(dataWidth.W))
+    /** Control bits */
     val control = Input(UInt())
   }
 
   val out = new Bundle {
+    /** Outputs to CordicCore */
     val cordic  = Output(CordicBundle(dataWidth))
+    /** Control bundle */
     val control = Output(CordicCoreControl())
   }
 

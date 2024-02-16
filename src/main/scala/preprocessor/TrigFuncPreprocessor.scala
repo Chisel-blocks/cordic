@@ -28,6 +28,13 @@ object TrigFuncControl {
   val STNPO2 = 1
 }
 
+/**
+  * Preprocessor for trigonometric operation support.
+  *
+  * @param mantissaBits
+  * @param fractionBits
+  * @param iterations
+  */
 class TrigFuncPreprocessor(mantissaBits: Int, fractionBits: Int,
                            iterations: Int)
   extends CordicPreprocessor(mantissaBits, fractionBits, iterations) {
@@ -35,11 +42,16 @@ class TrigFuncPreprocessor(mantissaBits: Int, fractionBits: Int,
   val largerThanPiOver2     = io.in.rs1 > consts.pPiOver2
   val smallerThanNegPiOver2 = io.in.rs1 < consts.nPiOver2
 
+  // Adder needed for
+  // Rescaling Sin and Cos to improve range
+  // Generating inputs for Log
+
   val addA = WireDefault(0.S)
   val addB = WireDefault(0.S)
   val subA = WireDefault(0.S)
   val subB = WireDefault(0.S)
 
+  // Mux for adder input
   when ((io.in.control === TrigOp.SINE.asUInt) || (io.in.control === TrigOp.COSINE.asUInt)) {
     addA := io.in.rs1
     addB := consts.pPi

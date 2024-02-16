@@ -9,12 +9,21 @@ import chisel3.util.{MuxCase, log2Ceil}
 import chisel3.stage.{ChiselStage}
 import chisel3.stage.ChiselGeneratorAnnotation
 
+/**
+  * Postprocessor for trigonometric operations.
+  *
+  * @param mantissaBits
+  * @param fractionBits
+  * @param iterations
+  */
 class TrigFuncPostprocessor(mantissaBits: Int, fractionBits: Int,
                            iterations: Int)
   extends CordicPostprocessor(mantissaBits, fractionBits, iterations) {
 
+  // Rescaling needed if it was performed in perprocessor
   val rescale = io.in.control.custom(TrigFuncControl.LTPO2) || io.in.control.custom(TrigFuncControl.STNPO2)
 
+  // Either x or y needs to be rescaled, depending on SINE or COSINE operation
   val adderA = WireDefault(0.S)
   when (io.in.control.custom(31,2) === TrigOp.SINE.asUInt) {
     adderA := ~io.in.cordic.y
@@ -22,6 +31,7 @@ class TrigFuncPostprocessor(mantissaBits: Int, fractionBits: Int,
     adderA := ~io.in.cordic.x
   }
 
+  // Rescale from negative to positive, or vice versa
   val rescaled = adderA + 1.S
 
   when (io.in.control.custom(31,2) === TrigOp.SINE.asUInt) {
@@ -63,6 +73,7 @@ class TrigFuncPostprocessor(mantissaBits: Int, fractionBits: Int,
     io.out.cordic.x := io.in.cordic.x
     io.out.cordic.y := io.in.cordic.y
     io.out.cordic.z := io.in.cordic.z
+    // CORDIC returns 0.5*log - this multiplies by 2
     io.out.dOut     := io.out.cordic.z << 1
   } .otherwise {
     io.out.cordic.x := DontCare

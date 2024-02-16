@@ -28,6 +28,13 @@ case class CordicPostprocessorIO(dataWidth: Int) extends Bundle {
 
 }
 
+/**
+  * Abstract class for Cordic postprocessors. Defines IOs and input parameters.
+  *
+  * @param mantissaBits
+  * @param fractionBits
+  * @param iterations
+  */
 abstract class CordicPostprocessor(val mantissaBits: Int, val fractionBits: Int, val iterations: Int) 
   extends Module {
 
