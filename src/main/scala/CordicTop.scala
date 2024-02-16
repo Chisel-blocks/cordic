@@ -2,7 +2,7 @@
 
 // Chisel module CordicTop
 // Inititally written by Aleksi Korsman (aleksi.korsman@aalto.fi), 2023-10-06
-package accelerators
+package cordic
 
 import chisel3._
 import chisel3.util.{ValidIO, log2Ceil}
@@ -15,10 +15,10 @@ import chisel3.util.RegEnable
 case class CordicTopIO(dataWidth: Int) extends Bundle {
 
   val in = Input(ValidIO(new Bundle {
-    val rs1 = SInt(dataWidth.W)
-    val rs2 = SInt(dataWidth.W)
-    val rs3 = SInt(dataWidth.W)
-    val op  = UInt(5.W)
+    val rs1     = SInt(dataWidth.W)
+    val rs2     = SInt(dataWidth.W)
+    val rs3     = SInt(dataWidth.W)
+    val control = UInt(32.W)
   }))
 
   val out = Output(ValidIO(new Bundle {
@@ -28,12 +28,28 @@ case class CordicTopIO(dataWidth: Int) extends Bundle {
 
 }
 
-class CordicTop(val mantissaBits: Int, val fractionBits: Int, val iterations: Int, opList: Seq[CordicOp])
+class CordicTop
+  (val mantissaBits: Int, val fractionBits: Int, val iterations: Int, val preprocessorClass: String, val postprocessorClass: String)
     extends Module {
   val io = IO(CordicTopIO(mantissaBits + fractionBits))
 
-  val preprocessor  = Module(new CordicPreprocessor(mantissaBits, fractionBits, iterations, opList))
-  val postprocessor = Module(new CordicPostprocessor(mantissaBits, fractionBits, iterations, opList))
+  val preprocessor: CordicPreprocessor  = {
+    if (preprocessorClass == "Basic")         Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations))
+    else if (preprocessorClass == "TrigFunc") Module(new TrigFuncPreprocessor(mantissaBits, fractionBits, iterations))
+    else {
+      throw new RuntimeException(s"Illegal type for preprocessorClass: $preprocessorClass")
+      Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations))
+    }
+  }
+  val postprocessor: CordicPostprocessor  = {
+    if (postprocessorClass == "Basic")         Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations))
+    else if (postprocessorClass == "TrigFunc") Module(new TrigFuncPostprocessor(mantissaBits, fractionBits, iterations))
+    else {
+      throw new RuntimeException(s"Illegal type for postprocessorClass: $postprocessorClass")
+      Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations))
+    }
+  }
+
   val cordicCore    = Module(new CordicCore(mantissaBits, fractionBits, iterations))
 
   val inRegs      = RegEnable(io.in.bits, io.in.valid)
@@ -43,10 +59,10 @@ class CordicTop(val mantissaBits: Int, val fractionBits: Int, val iterations: In
   inValidReg  := io.in.valid
   outValidReg := io.out.valid
 
-  preprocessor.io.in.rs1 := inRegs.rs1
-  preprocessor.io.in.rs2 := inRegs.rs2
-  preprocessor.io.in.rs3 := inRegs.rs3
-  preprocessor.io.in.op  := inRegs.op
+  preprocessor.io.in.rs1     := inRegs.rs1
+  preprocessor.io.in.rs2     := inRegs.rs2
+  preprocessor.io.in.rs3     := inRegs.rs3
+  preprocessor.io.in.control := inRegs.control
 
   cordicCore.io.in.bits  := preprocessor.io.out
   cordicCore.io.in.valid := inValidReg
@@ -67,7 +83,7 @@ object CordicTop extends App {
 
   case class Config(
       td: String = ".",
-      cordicOps: Seq[String] = Seq(),
+      cordicFunc: String = "Basic",
       mantissaBits: Int = 0,
       fractionBits: Int = 0,
       iterations: Int = 0
@@ -82,10 +98,10 @@ object CordicTop extends App {
       opt[String]('t', "target-dir")
         .action((x, c) => c.copy(td = x))
         .text("Verilog target directory"),
-      opt[Seq[String]]('c', "cordic_ops")
-        .valueName("<op1>,<op1>...")
-        .text("Cordic operations")
-        .action((x, c) => c.copy(cordicOps = x)),
+      opt[String]('c', "cordic_func")
+        .valueName("Function")
+        .text("Cordic Function. Determines which Pre- and Postprocessor is used.")
+        .action((x, c) => c.copy(cordicFunc = x)),
       opt[Int]('m', "mantissa_bits")
         .text("Number of mantissa bits used")
         .action((x, c) => c.copy(mantissaBits = x)),
@@ -101,13 +117,6 @@ object CordicTop extends App {
   OParser.parse(parser1, args, Config()) match {
     case Some(config) => {
 
-      val opList = config.cordicOps.map(className => {
-        val packageName   = this.getClass.getPackage.getName
-        val classInstance = Class.forName(packageName + ".Cordic" + className)
-        val constructor   = classInstance.getConstructor(classOf[Int], classOf[Int], classOf[Int])
-        val instance      = constructor.newInstance(config.mantissaBits, config.fractionBits, config.iterations)
-        instance.asInstanceOf[CordicOp]
-      })
       // These lines generate the Verilog output
       (new ChiselStage).execute(
         {Array("-td", config.td) },
@@ -117,7 +126,8 @@ object CordicTop extends App {
               config.mantissaBits,
               config.fractionBits,
               config.iterations,
-              opList
+              config.cordicFunc,
+              config.cordicFunc
             )
           }),
         )

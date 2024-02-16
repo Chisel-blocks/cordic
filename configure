@@ -45,7 +45,7 @@ VPATHDIRS=`find ${SCALAPATH}/* -type d -exec basename '{}' ';'`
 MAINMODULE="CordicTop"
 MODULES="CordicCore AdderSubtractor CordicPreprocessor CordicPostprocessor"
 TEST_MODULES=""
-PACKAGE="accelerators"
+PACKAGE="cordic"
 
 ############################# MAKEFILE   ####################################
 CURRENTFILE="${ROOTPATH}/Makefile"
@@ -74,12 +74,12 @@ SBT=sbt -J-Xmx16G -J-Xss8M
 
 # Default parameters
 # Cordic ops have to be separated by a comma
-cordic_ops ?= Sine,Cosine
+cordic_func ?= Basic
 mantissa_bits ?= 4
 fraction_bits ?= 12
 iterations   ?= 14
 
-MAINPARAMS = -c \$(cordic_ops) -m \$(mantissa_bits) -f \$(fraction_bits) -i \$(iterations)
+MAINPARAMS = -c \$(cordic_func) -m \$(mantissa_bits) -f \$(fraction_bits) -i \$(iterations)
 
 
 TOUCH=touch -r
