@@ -18,7 +18,7 @@ case class CordicTopIO(dataWidth: Int) extends Bundle {
     val rs1     = SInt(dataWidth.W)
     val rs2     = SInt(dataWidth.W)
     val rs3     = SInt(dataWidth.W)
-    val control = UInt()
+    val control = UInt(32.W)
   }))
 
   val out = Output(ValidIO(new Bundle {

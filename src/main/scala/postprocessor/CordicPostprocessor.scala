@@ -22,7 +22,7 @@ case class CordicPostprocessorIO(dataWidth: Int) extends Bundle {
     /** Bundle of post processed x, y, and z */
     val cordic = Output(CordicBundle(dataWidth))
 
-    /** Signal indicated by opList.resReg */
+    /** Additional output signal to be freely used */
     val dOut = Output(SInt(dataWidth.W))
   }
 
@@ -33,11 +33,6 @@ abstract class CordicPostprocessor(val mantissaBits: Int, val fractionBits: Int,
 
   val io = IO(CordicPostprocessorIO(dataWidth = mantissaBits + fractionBits))
   val consts = CordicConstants(mantissaBits, fractionBits, iterations)
-}
-
-class TrigFuncPostprocessor(mantissaBits: Int, fractionBits: Int, iterations: Int)
-    extends CordicPostprocessor(mantissaBits, fractionBits, iterations) {
-
 }
 
 object CordicPostprocessor extends App {

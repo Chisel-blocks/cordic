@@ -41,13 +41,13 @@ class TrigFuncPreprocessor(mantissaBits: Int, fractionBits: Int,
   when (io.in.control === TrigOp.SINE.asUInt) {
     io.out.cordic.x := consts.K
     io.out.cordic.y := 0.S
-    io.out.cordic.z := Mux(largerThanPiOver2, subPi, addPi)
+    io.out.cordic.z := MuxCase(io.in.rs1, Seq(largerThanPiOver2 -> subPi, smallerThanNegPiOver2 -> addPi))
     io.out.control.rotType := CordicRotationType.CIRCULAR
     io.out.control.mode := CordicMode.ROTATION
   } .elsewhen (io.in.control === TrigOp.COSINE.asUInt) {
     io.out.cordic.x := consts.K
     io.out.cordic.y := 0.S
-    io.out.cordic.z := Mux(largerThanPiOver2, subPi, addPi)
+    io.out.cordic.z := MuxCase(io.in.rs1, Seq(largerThanPiOver2 -> subPi, smallerThanNegPiOver2 -> addPi))
     io.out.control.rotType := CordicRotationType.CIRCULAR
     io.out.control.mode := CordicMode.ROTATION
   } .otherwise {

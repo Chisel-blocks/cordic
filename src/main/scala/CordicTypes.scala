@@ -53,7 +53,7 @@ case class CordicCoreControl() extends Bundle {
   val mode = CordicMode()
 
   /** Custom control bits to transmit info between pre- and postprocessor */
-  val custom = UInt()
+  val custom = UInt(32.W)
 }
 
 object CordicMethods {

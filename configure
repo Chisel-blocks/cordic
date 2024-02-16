@@ -45,7 +45,7 @@ VPATHDIRS=`find ${SCALAPATH}/* -type d -exec basename '{}' ';'`
 MAINMODULE="CordicTop"
 MODULES="CordicCore AdderSubtractor CordicPreprocessor CordicPostprocessor"
 TEST_MODULES=""
-PACKAGE="accelerators"
+PACKAGE="cordic"
 
 ############################# MAKEFILE   ####################################
 CURRENTFILE="${ROOTPATH}/Makefile"
