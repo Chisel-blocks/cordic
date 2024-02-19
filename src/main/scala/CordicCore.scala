@@ -19,7 +19,7 @@ case class CordicCoreIO(dataWidth: Int) extends Bundle {
 
 }
 
-class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends Module {
+class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int, repr: String = "fixed-point") extends Module {
   val io = IO(CordicCoreIO(dataWidth = mantissaBits + fractionBits))
 
   val wordLen = mantissaBits + fractionBits
@@ -54,7 +54,7 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int) extends 
 
   // Initialize all valid signals as false
 
-  val LUT = CordicLut(mantissaBits, fractionBits, totalIterations)
+  val LUT = CordicLut(mantissaBits, fractionBits, totalIterations, repr)
 
   var repeats  = 0
   var repeat   = false

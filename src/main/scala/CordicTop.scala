@@ -34,25 +34,25 @@ class CordicTop
   val io = IO(CordicTopIO(mantissaBits + fractionBits))
 
   val preprocessor: CordicPreprocessor  = {
-    if (preprocessorClass == "Basic")          Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations))
-    else if (preprocessorClass == "TrigFunc")  Module(new TrigFuncPreprocessor(mantissaBits, fractionBits, iterations))
-    else if (preprocessorClass == "UpConvert") Module(new UpConvertPreprocessor(mantissaBits, fractionBits, iterations))
+    if (preprocessorClass == "Basic")          Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations, "fixed-point"))
+    else if (preprocessorClass == "TrigFunc")  Module(new TrigFuncPreprocessor(mantissaBits, fractionBits, iterations, "fixed-point"))
+    else if (preprocessorClass == "UpConvert") Module(new UpConvertPreprocessor(mantissaBits, fractionBits, iterations, "pi"))
     else {
       throw new RuntimeException(s"Illegal type for preprocessorClass: $preprocessorClass")
-      Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations))
+      Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations, "fixed-point"))
     }
   }
   val postprocessor: CordicPostprocessor  = {
-    if (postprocessorClass == "Basic")          Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations))
-    else if (postprocessorClass == "TrigFunc")  Module(new TrigFuncPostprocessor(mantissaBits, fractionBits, iterations))
-    else if (postprocessorClass == "UpConvert") Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations))
+    if (postprocessorClass == "Basic")          Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations, preprocessor.repr))
+    else if (postprocessorClass == "TrigFunc")  Module(new TrigFuncPostprocessor(mantissaBits, fractionBits, iterations, preprocessor.repr))
+    else if (postprocessorClass == "UpConvert") Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations, preprocessor.repr))
     else {
       throw new RuntimeException(s"Illegal type for postprocessorClass: $postprocessorClass")
-      Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations))
+      Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations, "fixed-point"))
     }
   }
 
-  val cordicCore    = Module(new CordicCore(mantissaBits, fractionBits, iterations))
+  val cordicCore    = Module(new CordicCore(mantissaBits, fractionBits, iterations, repr = preprocessor.repr))
 
   val inRegs      = RegEnable(io.in.bits, io.in.valid)
   val outRegs     = RegEnable(postprocessor.io.out, cordicCore.io.out.valid)

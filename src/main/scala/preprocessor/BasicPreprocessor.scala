@@ -19,8 +19,8 @@ import chisel3.stage.ChiselGeneratorAnnotation
   * @param iterations
   */
 class BasicPreprocessor(mantissaBits: Int, fractionBits: Int,
-                           iterations: Int)
-  extends CordicPreprocessor(mantissaBits, fractionBits, iterations) {
+                           iterations: Int, repr: String)
+  extends CordicPreprocessor(mantissaBits, fractionBits, iterations, repr) {
 
   io.out.cordic.x := io.in.rs1
   io.out.cordic.y := io.in.rs2

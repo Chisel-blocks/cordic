@@ -18,8 +18,8 @@ import chisel3.stage.ChiselGeneratorAnnotation
   * @param iterations
   */
 class BasicPostprocessor(mantissaBits: Int, fractionBits: Int,
-                         iterations: Int)
-  extends CordicPostprocessor(mantissaBits, fractionBits, iterations) {
+                         iterations: Int, repr: String)
+  extends CordicPostprocessor(mantissaBits, fractionBits, iterations, repr) {
 
   io.out.cordic <> io.in.cordic
   io.out.dOut   := 0.S

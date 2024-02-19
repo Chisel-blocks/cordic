@@ -35,14 +35,15 @@ case class CordicPreprocessorIO(dataWidth: Int) extends Bundle {
 /**
   * Abstract class for Cordic Preprocessor that defines parameters and IOs
   *
-  * @param mantissaBits
-  * @param fractionBits
-  * @param iterations
+  * @param mantissaBits Number of mantissa bits
+  * @param fractionBits Number of fraction bits
+  * @param iterations Number of CORDIC iterations
+  * @param repr Representation: "fixed-point" or "pi" (meaning that values range from -pi/2 to pi/2)
   */
 abstract class CordicPreprocessor(val mantissaBits: Int, val fractionBits: Int,
-                                  val iterations: Int) extends Module {
+                                  val iterations: Int, val repr: String = "fixed-point") extends Module {
   val io = IO(CordicPreprocessorIO(dataWidth = mantissaBits + fractionBits))
-  val consts = CordicConstants(mantissaBits, fractionBits, iterations)
+  val consts = CordicConstants(mantissaBits, fractionBits, iterations, repr)
 }
 
 
@@ -57,6 +58,7 @@ object CordicPreprocessor extends App {
           4,
           12,
           14,
+          "fixed-point"
         )
       ),
     )

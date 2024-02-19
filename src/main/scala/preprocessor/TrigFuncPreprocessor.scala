@@ -36,8 +36,8 @@ object TrigFuncControl {
   * @param iterations
   */
 class TrigFuncPreprocessor(mantissaBits: Int, fractionBits: Int,
-                           iterations: Int)
-  extends CordicPreprocessor(mantissaBits, fractionBits, iterations) {
+                           iterations: Int, repr: String)
+  extends CordicPreprocessor(mantissaBits, fractionBits, iterations, repr) {
 
   val largerThanPiOver2     = io.in.rs1 > consts.pPiOver2
   val smallerThanNegPiOver2 = io.in.rs1 < consts.nPiOver2
@@ -59,9 +59,9 @@ class TrigFuncPreprocessor(mantissaBits: Int, fractionBits: Int,
     subB := consts.pPi
   } .elsewhen (io.in.control === TrigOp.LOG.asUInt) {
     addA := io.in.rs1
-    addB := CordicMethods.toFixedPoint(1.0, mantissaBits, fractionBits)
+    addB := CordicMethods.toFixedPoint(1.0, mantissaBits, fractionBits, repr)
     subA := io.in.rs1
-    subB := CordicMethods.toFixedPoint(1.0, mantissaBits, fractionBits)
+    subB := CordicMethods.toFixedPoint(1.0, mantissaBits, fractionBits, repr)
   }
 
   val adder = addA + addB
@@ -80,7 +80,7 @@ class TrigFuncPreprocessor(mantissaBits: Int, fractionBits: Int,
     io.out.control.rotType := CordicRotationType.CIRCULAR
     io.out.control.mode := CordicMode.ROTATION
   } .elsewhen (io.in.control === TrigOp.ARCTAN.asUInt) {
-    io.out.cordic.x := CordicMethods.toFixedPoint(1.0, mantissaBits, fractionBits)
+    io.out.cordic.x := CordicMethods.toFixedPoint(1.0, mantissaBits, fractionBits, repr)
     io.out.cordic.y := io.in.rs1
     io.out.cordic.z := 0.S
     io.out.control.rotType := CordicRotationType.CIRCULAR
@@ -98,7 +98,7 @@ class TrigFuncPreprocessor(mantissaBits: Int, fractionBits: Int,
     io.out.control.rotType := CordicRotationType.HYPERBOLIC
     io.out.control.mode := CordicMode.ROTATION
   } .elsewhen (io.in.control === TrigOp.ARCTANH.asUInt) {
-    io.out.cordic.x := CordicMethods.toFixedPoint(1.0, mantissaBits, fractionBits)
+    io.out.cordic.x := CordicMethods.toFixedPoint(1.0, mantissaBits, fractionBits, repr)
     io.out.cordic.y := io.in.rs1
     io.out.cordic.z := 0.S
     io.out.control.rotType := CordicRotationType.HYPERBOLIC

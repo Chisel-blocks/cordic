@@ -17,8 +17,8 @@ import chisel3.stage.ChiselGeneratorAnnotation
   * @param iterations
   */
 class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
-                           iterations: Int)
-  extends CordicPreprocessor(mantissaBits, fractionBits, iterations) {
+                           iterations: Int, repr: String)
+  extends CordicPreprocessor(mantissaBits, fractionBits, iterations, repr) {
 
   val largerThanPiOver2     = io.in.rs3 > consts.pPiOver2
   val smallerThanNegPiOver2 = io.in.rs3 < consts.nPiOver2

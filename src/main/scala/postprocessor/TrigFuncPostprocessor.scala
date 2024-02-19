@@ -17,8 +17,8 @@ import chisel3.stage.ChiselGeneratorAnnotation
   * @param iterations
   */
 class TrigFuncPostprocessor(mantissaBits: Int, fractionBits: Int,
-                           iterations: Int)
-  extends CordicPostprocessor(mantissaBits, fractionBits, iterations) {
+                           iterations: Int, repr: String)
+  extends CordicPostprocessor(mantissaBits, fractionBits, iterations, repr) {
 
   // Rescaling needed if it was performed in perprocessor
   val rescale = io.in.control.custom(TrigFuncControl.LTPO2) || io.in.control.custom(TrigFuncControl.STNPO2)

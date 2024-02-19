@@ -34,12 +34,14 @@ case class CordicPostprocessorIO(dataWidth: Int) extends Bundle {
   * @param mantissaBits
   * @param fractionBits
   * @param iterations
+  * @param repr
   */
-abstract class CordicPostprocessor(val mantissaBits: Int, val fractionBits: Int, val iterations: Int) 
+abstract class CordicPostprocessor(val mantissaBits: Int, val fractionBits: Int,
+                                   val iterations: Int, val repr: String = "fixed-point") 
   extends Module {
 
   val io = IO(CordicPostprocessorIO(dataWidth = mantissaBits + fractionBits))
-  val consts = CordicConstants(mantissaBits, fractionBits, iterations)
+  val consts = CordicConstants(mantissaBits, fractionBits, iterations, repr)
 }
 
 object CordicPostprocessor extends App {
@@ -53,6 +55,7 @@ object CordicPostprocessor extends App {
           4,
           12,
           14,
+          "fixed-point"
         )
       ),
     )

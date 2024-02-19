@@ -44,16 +44,22 @@ object CordicMethods {
     (integer, value - integer)
   }
 
-  def toFixedPoint(value: Double, mantissaBits: Int, fractionBits: Int): SInt = {
-    val (integerSigned, frac) = modf(value)
-    val sign                  = value < 0
-    val integer               = abs(integerSigned)
-    val fracBits              = floor((1 << fractionBits) * abs(frac)).toInt
-    var bits                  = (integer << fractionBits) | fracBits
-    if (sign) {
-      bits = bits * -1
+  def toFixedPoint(value: Double, mantissaBits: Int, fractionBits: Int, repr: String): SInt = {
+    if (repr == "fixed-point") {
+      val (integerSigned, frac) = modf(value)
+      val sign                  = value < 0
+      val integer               = abs(integerSigned)
+      val fracBits              = floor((1 << fractionBits) * abs(frac)).toInt
+      var bits                  = (integer << fractionBits) | fracBits
+      if (sign) {
+        bits = bits * -1
+      }
+      bits.S
+    } else if (repr == "pi") {
+      ((value * pow(2, mantissaBits + fractionBits - 1)) / math.Pi).toLong.S
+    } else {
+      throw new RuntimeException(s"Incorrect repr type: $repr")
     }
-    bits.S
   }
 
   def calcK(iterations: Int, rotationType: CordicRotationType.Type): Double = {
@@ -73,39 +79,41 @@ object CordicMethods {
 
 }
 
-case class CordicConstants(mantissaBits: Int, fractionBits: Int, iterations: Int) {
+case class CordicConstants(mantissaBits: Int, fractionBits: Int, iterations: Int, repr: String) {
 
   val K =
     CordicMethods.toFixedPoint(
       1.0 / CordicMethods.calcK(iterations, CordicRotationType.CIRCULAR),
       mantissaBits,
-      fractionBits
+      fractionBits,
+      repr
     )
 
   val Kh = CordicMethods.toFixedPoint(
     1.0 / CordicMethods.calcK(iterations, CordicRotationType.HYPERBOLIC),
     mantissaBits,
-    fractionBits
+    fractionBits,
+    repr
   )
 
-  val pPi      = CordicMethods.toFixedPoint(math.Pi, mantissaBits, fractionBits)
-  val pPiOver2 = CordicMethods.toFixedPoint(math.Pi / 2, mantissaBits, fractionBits)
-  val nPiOver2 = CordicMethods.toFixedPoint(-math.Pi / 2, mantissaBits, fractionBits)
+  val pPi      = CordicMethods.toFixedPoint(math.Pi, mantissaBits, fractionBits, repr)
+  val pPiOver2 = CordicMethods.toFixedPoint(math.Pi / 2, mantissaBits, fractionBits, repr)
+  val nPiOver2 = CordicMethods.toFixedPoint(-math.Pi / 2, mantissaBits, fractionBits, repr)
 
 }
 
-case class CordicLut(mantissaBits: Int, fractionBits: Int, iterations: Int) {
+case class CordicLut(mantissaBits: Int, fractionBits: Int, iterations: Int, repr: String) {
 
   def atanh(x: Double): Double = {
     0.5 * log((1 + x) / (1 - x))
   }
 
   val atanVals = Seq.tabulate(iterations)(i =>
-    CordicMethods.toFixedPoint(atan(pow(2, -i)), mantissaBits, fractionBits)
+    CordicMethods.toFixedPoint(atan(pow(2, -i)), mantissaBits, fractionBits, repr)
   )
 
   val atanhVals = Seq.tabulate(iterations)(i =>
-    CordicMethods.toFixedPoint(atanh(pow(2, -i)), mantissaBits, fractionBits)
+    CordicMethods.toFixedPoint(atanh(pow(2, -i)), mantissaBits, fractionBits, repr)
   )
 
 }
