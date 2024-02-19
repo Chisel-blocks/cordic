@@ -21,6 +21,8 @@ case class CordicPreprocessorIO(dataWidth: Int) extends Bundle {
     val rs3     = Input(SInt(dataWidth.W))
     /** Control bits */
     val control = Input(UInt())
+    /** Indicates new input data */
+    val valid   = Input(Bool())
   }
 
   val out = new Bundle {

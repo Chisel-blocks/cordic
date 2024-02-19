@@ -36,7 +36,7 @@ class CordicTop
   val preprocessor: CordicPreprocessor  = {
     if (preprocessorClass == "Basic")          Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations, "fixed-point"))
     else if (preprocessorClass == "TrigFunc")  Module(new TrigFuncPreprocessor(mantissaBits, fractionBits, iterations, "fixed-point"))
-    else if (preprocessorClass == "UpConvert") Module(new UpConvertPreprocessor(mantissaBits, fractionBits, iterations, "pi"))
+    else if (preprocessorClass == "UpConvert") Module(new UpConvertPreprocessor(mantissaBits, fractionBits, iterations, "pi", usePhaseAccum = true))
     else {
       throw new RuntimeException(s"Illegal type for preprocessorClass: $preprocessorClass")
       Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations, "fixed-point"))
@@ -65,6 +65,7 @@ class CordicTop
   preprocessor.io.in.rs2     := inRegs.rs2
   preprocessor.io.in.rs3     := inRegs.rs3
   preprocessor.io.in.control := inRegs.control
+  preprocessor.io.in.valid   := inValidReg
 
   cordicCore.io.in.bits  := preprocessor.io.out
   cordicCore.io.in.valid := inValidReg

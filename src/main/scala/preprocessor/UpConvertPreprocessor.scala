@@ -15,13 +15,32 @@ import chisel3.stage.ChiselGeneratorAnnotation
   * @param mantissaBits
   * @param fractionBits
   * @param iterations
+  * @param repr "fixed-point" or "pi"
+  * @param usePhaseAccum use internal phase accumulator (requires repr = "pi")
   */
 class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
-                           iterations: Int, repr: String)
+                           iterations: Int, repr: String, usePhaseAccum: Boolean)
   extends CordicPreprocessor(mantissaBits, fractionBits, iterations, repr) {
 
-  val largerThanPiOver2     = io.in.rs3 > consts.pPiOver2
-  val smallerThanNegPiOver2 = io.in.rs3 < consts.nPiOver2
+  // TODO: parameterize?
+  val phaseAccum = RegInit(0.U(32.W))
+  // Control word sets the frequency
+  val controlWord = io.in.control
+
+  if (usePhaseAccum) {
+    when (io.in.valid) {
+      phaseAccum := phaseAccum + controlWord
+    }
+  }
+
+  // Use MSB bits for phase value
+  val phase = {
+    if (usePhaseAccum) phaseAccum.head(mantissaBits + fractionBits).asSInt
+    else io.in.rs3
+  }
+
+  val largerThanPiOver2     = phase > consts.pPiOver2
+  val smallerThanNegPiOver2 = phase < consts.nPiOver2
 
   // Adder needed for
   // applying a +- 90 degree pre-rotation if needed
@@ -31,9 +50,9 @@ class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
   val subA = WireDefault(0.S)
   val subB = WireDefault(0.S)
 
-  addA := io.in.rs3
+  addA := phase
   addB := consts.pPiOver2
-  subA := io.in.rs3
+  subA := phase
   subB := consts.pPiOver2
 
   val adder = addA + addB
@@ -44,7 +63,7 @@ class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
 
   io.out.cordic.x := MuxCase(io.in.rs1, Seq(largerThanPiOver2 -> rs2_neg, smallerThanNegPiOver2 -> io.in.rs2))
   io.out.cordic.y := MuxCase(io.in.rs2, Seq(largerThanPiOver2 -> io.in.rs1, smallerThanNegPiOver2 -> rs1_neg))
-  io.out.cordic.z := MuxCase(io.in.rs3, Seq(largerThanPiOver2 -> subtractor, smallerThanNegPiOver2 -> adder))
+  io.out.cordic.z := MuxCase(phase, Seq(largerThanPiOver2 -> subtractor, smallerThanNegPiOver2 -> adder))
   io.out.control.rotType := CordicRotationType.CIRCULAR
   io.out.control.mode := CordicMode.ROTATION
 
