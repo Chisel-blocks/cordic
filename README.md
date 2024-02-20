@@ -15,5 +15,10 @@ Number of CORDIC iterations can be selected with `iterations`. Total number of c
 You can configure the CORDIC by selecting which pre- and postprocessor is used. Currently, the following ones have been implemented:
 * "Basic" - No pre- or postprocessing. Data in rs1,rs2,rs3 is directly fed to x_0,y_0,z_0. Control(0) selects between Circular (0) and Hyperbolic (1) modes. Control(1) selects between Rotation (0) and Vectoring(0) modes
 * "TrigFunc" - Adds pre- and postprocessing to calculate Sine, Cosine, Arctan, Sinh, Cosh, Arctanh, Exponential, and natural logarithm. Input data should be fed to rs1. The rest can be undefined. Output of the function will be in dOut, but the result of Cordic rotation is also provided in cordic.x/y/z. Control bits determine the operation, being indexed from 0-7 in the aforementioned order.
+### Number representation
+There are two supported number representations: "fixed-point" and "pi". This determines what the binary numbers represent:
+- "fixed-point" - standard fixed-point representation
+- "pi" - values range from -pi to +pi.
+The provided `repr` will mostly affect the result of functions that calculate constants, i.e. functions in `CordicConstants`, `CordicMethods`, and `CordicLut`.
 
 You can create your own under preprocessor/ and postprocessor/. Then, you need to add a checker in CordicTop.scala that uses your own pre- and postprocessor with a suitable input parameter.
