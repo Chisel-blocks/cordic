@@ -23,9 +23,9 @@ class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
   extends CordicPreprocessor(mantissaBits, fractionBits, iterations, repr) {
 
   // TODO: parameterize?
-  val phaseAccum = RegInit(0.U(32.W))
+  val phaseAccum = RegInit(0.S(32.W))
   // Control word sets the frequency
-  val controlWord = io.in.control
+  val controlWord = io.in.control.asSInt
 
   if (usePhaseAccum) {
     when (io.in.valid) {
