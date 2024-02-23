@@ -43,7 +43,7 @@ FIRRTL_JAR="$ROOTPATH/rocket-chip/firrtl/utils/bin/firrtl.jar"
 
 VPATHDIRS=`find ${SCALAPATH}/* -type d -exec basename '{}' ';'`
 MAINMODULE="CordicTop"
-MODULES="CordicCore AdderSubtractor CordicPreprocessor CordicPostprocessor"
+MODULES="AXI4LCordic CordicCore AdderSubtractor CordicPreprocessor CordicPostprocessor"
 TEST_MODULES=""
 PACKAGE="cordic"
 

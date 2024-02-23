@@ -6,9 +6,12 @@ ThisBuild / scalaVersion     := "2.13.8"
 ThisBuild / version          := scala.sys.process.Process("git rev-parse --short HEAD").!!.mkString.replaceAll("\\s", "")+"-SNAPSHOT"
 ThisBuild / organization     := "Chisel-blocks"
 
+val ambaVersion = settingKey[String]("The version of amba used for building.")
 val chiselVersion = "3.5.1"
 
 resolvers += "A-Core Gitlab" at "https://gitlab.com/api/v4/groups/13348068/-/packages/maven"
+
+ambaVersion := "0.5+"
 
 lazy val CordicTop = (project in file("."))
   .settings(
@@ -16,7 +19,8 @@ lazy val CordicTop = (project in file("."))
     libraryDependencies ++= Seq(
       //"org.chipsalliance" %% "chisel" % chiselVersion,
       "edu.berkeley.cs" %% "chisel3" % chiselVersion,
-      "com.github.scopt" %% "scopt" % "4.1.0"
+      "com.github.scopt" %% "scopt" % "4.1.0",
+      "Chisel-blocks"   %% "amba" % ambaVersion.value
     ),
     scalacOptions ++= Seq(
       "-language:reflectiveCalls",
