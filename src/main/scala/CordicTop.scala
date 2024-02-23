@@ -11,6 +11,7 @@ import chisel3.stage.ChiselGeneratorAnnotation
 import scopt.OParser
 import java.io.File
 import chisel3.util.RegEnable
+import cordic.config._
 
 case class CordicTopIO(dataWidth: Int) extends Bundle {
 
@@ -86,10 +87,7 @@ object CordicTop extends App {
 
   case class Config(
       td: String = ".",
-      cordicFunc: String = "Basic",
-      mantissaBits: Int = 0,
-      fractionBits: Int = 0,
-      iterations: Int = 0
+      config: String = ""
   )
 
   val builder = OParser.builder[Config]
@@ -98,27 +96,19 @@ object CordicTop extends App {
     import builder._
     OParser.sequence(
       programName("CordicTop"),
-      opt[String]('t', "target-dir")
+      opt[String]('t', "target_dir")
         .action((x, c) => c.copy(td = x))
         .text("Verilog target directory"),
-      opt[String]('c', "cordic_func")
-        .valueName("Function")
-        .text("Cordic Function. Determines which Pre- and Postprocessor is used.")
-        .action((x, c) => c.copy(cordicFunc = x)),
-      opt[Int]('m', "mantissa_bits")
-        .text("Number of mantissa bits used")
-        .action((x, c) => c.copy(mantissaBits = x)),
-      opt[Int]('f', "fraction_bits")
-        .text("Number of fraction bits used")
-        .action((x, c) => c.copy(fractionBits = x)),
-      opt[Int]('i', "iterations")
-        .text("How many iterations CORDIC runs")
-        .action((x, c) => c.copy(iterations = x))
+      opt[String]('f', "config_file")
+        .text("path to config YAML file")
+        .action((x, c) => c.copy(config = x)),
     )
   }
 
   OParser.parse(parser1, args, Config()) match {
     case Some(config) => {
+
+      val cordic_config = CordicConfig.loadFromFile(config.config)
 
       // These lines generate the Verilog output
       (new ChiselStage).execute(
@@ -126,11 +116,11 @@ object CordicTop extends App {
         Seq(
           ChiselGeneratorAnnotation(() => {
             new CordicTop(
-              config.mantissaBits,
-              config.fractionBits,
-              config.iterations,
-              config.cordicFunc,
-              config.cordicFunc
+              cordic_config.mantissaBits,
+              cordic_config.fractionBits,
+              cordic_config.iterations,
+              cordic_config.preprocessorClass,
+              cordic_config.postprocessorClass,
             )
           }),
         )

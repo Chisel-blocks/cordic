@@ -1,0 +1,5 @@
+mantissa-bits: 4
+fraction-bits: 12
+iterations: 16
+preprocessor-class: "TrigFunc"
+postprocessor-class: "TrigFunc"

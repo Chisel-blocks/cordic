@@ -7,6 +7,8 @@ import chisel3.stage.{ChiselStage, ChiselGeneratorAnnotation}
 
 import amba.common._
 import amba.axi4l._
+import cordic.config._
+import scopt.OParser
 
 class AXI4LCordic(
   mantissaBits: Int,
@@ -49,10 +51,50 @@ class AXI4LCordic(
 
 object AXI4LCordic extends App {
 
-  // These lines generate the Verilog output
-  (new ChiselStage).execute(
-    { Array() ++ args },
-    Seq(ChiselGeneratorAnnotation(() => new AXI4LCordic(3, 14, 16, "Basic", "Basic", 32, 32)))
+  case class Config(
+      td: String = ".",
+      config: String = ""
   )
+
+  val builder = OParser.builder[Config]
+
+  val parser1 = {
+    import builder._
+    OParser.sequence(
+      programName("AXI4LCordic"),
+      opt[String]('t', "target_dir")
+        .action((x, c) => c.copy(td = x))
+        .text("Verilog target directory"),
+      opt[String]('f', "config_file")
+        .text("path to config YAML file")
+        .action((x, c) => c.copy(config = x)),
+    )
+  }
+
+  OParser.parse(parser1, args, Config()) match {
+    case Some(config) => {
+
+      val cordic_config = CordicConfig.loadFromFile(config.config)
+
+      // These lines generate the Verilog output
+      (new ChiselStage).execute(
+        {Array("-td", config.td) },
+        Seq(
+          ChiselGeneratorAnnotation(() => {
+            new AXI4LCordic(
+              cordic_config.mantissaBits,
+              cordic_config.fractionBits,
+              cordic_config.iterations,
+              cordic_config.preprocessorClass,
+              cordic_config.postprocessorClass,
+            )
+          }),
+        )
+      )
+    }
+    case _ => {
+      println("Could not parse arguments")
+    }
+  }
 
 }

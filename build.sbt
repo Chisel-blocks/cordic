@@ -20,7 +20,9 @@ lazy val CordicTop = (project in file("."))
       //"org.chipsalliance" %% "chisel" % chiselVersion,
       "edu.berkeley.cs" %% "chisel3" % chiselVersion,
       "com.github.scopt" %% "scopt" % "4.1.0",
-      "Chisel-blocks"   %% "amba" % ambaVersion.value
+      "Chisel-blocks"   %% "amba" % ambaVersion.value,
+      "com.github.pureconfig" %% "pureconfig" % "0.17.4",
+      "com.github.pureconfig" %% "pureconfig-yaml" % "0.17.4",
     ),
     scalacOptions ++= Seq(
       "-language:reflectiveCalls",
