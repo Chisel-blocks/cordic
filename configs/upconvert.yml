@@ -3,3 +3,6 @@ fraction-bits: 14
 iterations: 16
 preprocessor-class: "UpConvert"
 postprocessor-class: "UpConvert"
+up-convert-config:
+  use-phase-accum: true
+  phase-accum-width: 24

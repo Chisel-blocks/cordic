@@ -5,26 +5,19 @@ import chisel3.util._
 import chisel3.experimental._
 import chisel3.stage.{ChiselStage, ChiselGeneratorAnnotation}
 
+import cordic.config._
 import amba.common._
 import amba.axi4l._
 import cordic.config._
 import scopt.OParser
 
 class AXI4LCordic(
-  mantissaBits: Int,
-  fractionBits: Int,
-  iterations: Int,
-  preprocessorClass: String,
-  postprocessorClass: String,
+  val config: CordicConfig,
   val addr_width: Int = 32,
   val data_width: Int = 32,
 )  extends Module with AXI4LSlaveLogic with AXI4LSlave {
 
-  val cordic = Module(new CordicTop(mantissaBits,
-                                    fractionBits,
-                                    iterations,
-                                    preprocessorClass,
-                                    postprocessorClass))
+  val cordic = Module(new CordicTop(config))
 
   val inRegs = Reg(Vec(3, UInt(32.W)))
   val outRegs = Reg(Vec(3, UInt(32.W)))
@@ -82,11 +75,7 @@ object AXI4LCordic extends App {
         Seq(
           ChiselGeneratorAnnotation(() => {
             new AXI4LCordic(
-              cordic_config.mantissaBits,
-              cordic_config.fractionBits,
-              cordic_config.iterations,
-              cordic_config.preprocessorClass,
-              cordic_config.postprocessorClass,
+              cordic_config
             )
           }),
         )

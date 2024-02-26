@@ -9,12 +9,18 @@ import pureconfig.generic.ProductHint
 import pureconfig.module.yaml._
 import chisel3._
 
+case class UpConvertConfig(
+  usePhaseAccum: Boolean,
+  phaseAccumWidth: Int
+)
+
 case class CordicConfig(
   mantissaBits: Int,
   fractionBits: Int,
   iterations: Int,
   preprocessorClass: String,
-  postprocessorClass: String
+  postprocessorClass: String,
+  upConvertConfig: Option[UpConvertConfig]
 )
 
 object CordicConfig {

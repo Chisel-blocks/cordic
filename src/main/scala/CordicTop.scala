@@ -30,14 +30,21 @@ case class CordicTopIO(dataWidth: Int) extends Bundle {
 }
 
 class CordicTop
-  (val mantissaBits: Int, val fractionBits: Int, val iterations: Int, val preprocessorClass: String, val postprocessorClass: String)
+  (val config: CordicConfig)
     extends Module {
+  
+  val mantissaBits = config.mantissaBits
+  val fractionBits = config.fractionBits
+  val iterations = config.iterations
+  val preprocessorClass = config.preprocessorClass
+  val postprocessorClass = config.postprocessorClass
+
   val io = IO(CordicTopIO(mantissaBits + fractionBits))
 
   val preprocessor: CordicPreprocessor  = {
     if (preprocessorClass == "Basic")          Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations, "fixed-point"))
     else if (preprocessorClass == "TrigFunc")  Module(new TrigFuncPreprocessor(mantissaBits, fractionBits, iterations, "fixed-point"))
-    else if (preprocessorClass == "UpConvert") Module(new UpConvertPreprocessor(mantissaBits, fractionBits, iterations, "pi", usePhaseAccum = true))
+    else if (preprocessorClass == "UpConvert") Module(new UpConvertPreprocessor(mantissaBits, fractionBits, iterations, "pi", config.upConvertConfig.get))
     else {
       throw new RuntimeException(s"Illegal type for preprocessorClass: $preprocessorClass")
       Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations, "fixed-point"))
@@ -116,11 +123,7 @@ object CordicTop extends App {
         Seq(
           ChiselGeneratorAnnotation(() => {
             new CordicTop(
-              cordic_config.mantissaBits,
-              cordic_config.fractionBits,
-              cordic_config.iterations,
-              cordic_config.preprocessorClass,
-              cordic_config.postprocessorClass,
+              cordic_config
             )
           }),
         )

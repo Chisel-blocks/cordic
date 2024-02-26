@@ -8,6 +8,7 @@ import chisel3.experimental._
 import chisel3.util.{MuxCase, log2Ceil}
 import chisel3.stage.{ChiselStage}
 import chisel3.stage.ChiselGeneratorAnnotation
+import cordic.config.UpConvertConfig
 
 /**
   * Preprocessor for usign CORDIC for upconversion
@@ -19,15 +20,14 @@ import chisel3.stage.ChiselGeneratorAnnotation
   * @param usePhaseAccum use internal phase accumulator (requires repr = "pi")
   */
 class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
-                           iterations: Int, repr: String, usePhaseAccum: Boolean)
+                           iterations: Int, repr: String, config: UpConvertConfig)
   extends CordicPreprocessor(mantissaBits, fractionBits, iterations, repr) {
 
-  // TODO: parameterize?
-  val phaseAccum = RegInit(0.S(32.W))
+  val phaseAccum = RegInit(0.S(config.phaseAccumWidth.W))
   // Control word sets the frequency
   val controlWord = io.in.control.asSInt
 
-  if (usePhaseAccum) {
+  if (config.usePhaseAccum) {
     when (io.in.valid) {
       phaseAccum := phaseAccum + controlWord
     }
@@ -35,7 +35,7 @@ class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
 
   // Use MSB bits for phase value
   val phase = {
-    if (usePhaseAccum) phaseAccum.head(mantissaBits + fractionBits).asSInt
+    if (config.usePhaseAccum) phaseAccum.head(mantissaBits + fractionBits).asSInt
     else io.in.rs3
   }
 
