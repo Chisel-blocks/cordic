@@ -17,7 +17,7 @@ import cordic.config.UpConvertConfig
   * @param fractionBits
   * @param iterations
   * @param repr "fixed-point" or "pi"
-  * @param usePhaseAccum use internal phase accumulator (requires repr = "pi")
+  * @param config UpConvertConfig
   */
 class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
                            iterations: Int, repr: String, config: UpConvertConfig)
