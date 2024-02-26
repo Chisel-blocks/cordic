@@ -19,7 +19,29 @@ case class CordicCoreIO(dataWidth: Int) extends Bundle {
 
 }
 
-class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int, repr: String = "fixed-point") extends Module {
+/**
+  * Configurable Cordic core for rotation/vectoring circular/hyperbolic. 
+  * User can select which modes are generated. 
+  * The generator minimizes hardware for cases when some mode or type is not needed.
+  *
+  * @param mantissaBits
+  * @param fractionBits
+  * @param iterations
+  * @param repr Number representation for atan values
+  * @param enableCircular
+  * @param enableHyperbolic
+  * @param enableRotational
+  * @param enableVectoring
+  */
+class CordicCore(mantissaBits: Int,
+                 fractionBits: Int,
+                 iterations: Int,
+                 repr: String,
+                 enableCircular: Boolean,
+                 enableHyperbolic: Boolean,
+                 enableRotational: Boolean,
+                 enableVectoring: Boolean
+                 ) extends Module {
   val io = IO(CordicCoreIO(dataWidth = mantissaBits + fractionBits))
 
   val wordLen = mantissaBits + fractionBits
@@ -35,7 +57,8 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int, repr: St
     n
   }
 
-  val totalIterations = iterations + nRepeats
+  val totalIterations = if (enableHyperbolic) iterations + nRepeats
+                        else                  iterations
 
   val inRegs     = RegEnable(io.in.bits, io.in.valid)
   val inValidReg = RegInit(false.B)
@@ -63,17 +86,49 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int, repr: St
 
   for (i <- 0 until totalIterations) {
 
-    val m     = Wire(Bool())
-    val sigma = Wire(Bool())
-    when(inWires(i).bits.control.mode === CordicMode.ROTATION) {
+    
+    // Generate control logic only if needed
+    // If only either mode is enabled, no need to check for mode
+    val rotationalSelect = {
+      if      (enableRotational && enableVectoring)  inWires(i).bits.control.mode === CordicMode.ROTATION
+      else if (enableRotational && !enableVectoring) true.B
+      else false.B
+    }
+    
+    val vectoringSelect = {
+      if      (enableVectoring && enableRotational)  inWires(i).bits.control.mode === CordicMode.VECTORING
+      else if (enableVectoring && !enableRotational) true.B
+      else false.B
+    }
+    
+    val sigma = WireDefault(false.B)
+    when(rotationalSelect) {
       sigma := inWires(i).bits.cordic.z >= 0.S
-    }.otherwise { // VECTORING
+    }
+    when(vectoringSelect) {
       sigma := inWires(i).bits.cordic.y < 0.S
     }
 
-    when(inWires(i).bits.control.rotType === CordicRotationType.CIRCULAR) {
+    // Generate control logic only if needed
+    // If only either type is enabled, no need to check for type
+    val circularSelect = {
+      if      (enableCircular && enableHyperbolic)  inWires(i).bits.control.rotType === CordicRotationType.CIRCULAR
+      else if (enableCircular && !enableHyperbolic) true.B
+      else false.B
+    }
+
+    val hyperbolicSelect = {
+      if      (enableHyperbolic && enableRotational)  inWires(i).bits.control.rotType === CordicRotationType.HYPERBOLIC
+      else if (enableHyperbolic && !enableRotational) true.B
+      else false.B
+    }
+
+    val m = WireDefault(false.B)
+
+    when(circularSelect) {
       m := true.B
-    }.otherwise { // HYPERBOLIC
+    }
+    when(hyperbolicSelect) {
       m := false.B
     }
 
@@ -82,15 +137,17 @@ class CordicCore(mantissaBits: Int, fractionBits: Int, iterations: Int, repr: St
       inWires(i).valid := validRegs(i - 1)
     }
 
-    if (CordicConstants.hyperbolicRepeatIndices.contains(i - repeats) && !repeat) {
+    // Keep track of repeat iterations required for hyperbolic mode
+    if (CordicConstants.hyperbolicRepeatIndices.contains(i - repeats) && !repeat && enableHyperbolic) {
       repeat = true
       repeats += 1
     } else {
       repeat = false
     }
 
+    // First stage should be bypassed for hyperbolic mode
     val bypass = WireDefault(false.B)
-    if (i == 0) {
+    if (i == 0 && enableHyperbolic) {
       when(m === 0.U) {
         bypass := true.B
       }
@@ -142,7 +199,8 @@ object CordicCore extends App {
   // These lines generate the Verilog output
   (new ChiselStage).execute(
     { Array() ++ args },
-    Seq(ChiselGeneratorAnnotation(() => new CordicCore(4, 12, 14)))
+    Seq(ChiselGeneratorAnnotation(() => new CordicCore(4, 12, 14,
+                                                       "fixed-point", true, true, true, true)))
   )
 
 }

@@ -3,6 +3,9 @@ fraction-bits: 14
 iterations: 16
 preprocessor-class: "UpConvert"
 postprocessor-class: "UpConvert"
+number-repr: "fixed-point"
+enable-circular: true
+enable-rotational: true
 up-convert-config:
   use-phase-accum: true
   phase-accum-width: 24

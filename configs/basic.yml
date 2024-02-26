@@ -3,3 +3,7 @@ fraction-bits: 12
 iterations: 16
 preprocessor-class: "Basic"
 postprocessor-class: "Basic"
+enable-circular: true
+enable-hyperbolic: true
+enable-rotational: true
+enable-vectoring: true

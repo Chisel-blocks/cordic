@@ -18,8 +18,13 @@ case class CordicConfig(
   mantissaBits: Int,
   fractionBits: Int,
   iterations: Int,
-  preprocessorClass: String,
-  postprocessorClass: String,
+  preprocessorClass: String = "Basic",
+  postprocessorClass: String = "Basic",
+  numberRepr: String = "fixed-point",
+  enableCircular: Boolean = false,
+  enableHyperbolic: Boolean = false,
+  enableRotational: Boolean = false,
+  enableVectoring: Boolean = false,
   upConvertConfig: Option[UpConvertConfig]
 )
 

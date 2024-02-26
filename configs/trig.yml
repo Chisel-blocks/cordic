@@ -3,3 +3,7 @@ fraction-bits: 12
 iterations: 16
 preprocessor-class: "TrigFunc"
 postprocessor-class: "TrigFunc"
+enable-circular: true
+enable-hyperbolic: true
+enable-rotational: true
+enable-vectoring: true

@@ -39,6 +39,7 @@ class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
     else io.in.rs3
   }
 
+  // TODO: check if it should be >= or <= for efficient hw
   val largerThanPiOver2     = phase > consts.pPiOver2
   val smallerThanNegPiOver2 = phase < consts.nPiOver2
 
