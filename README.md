@@ -38,7 +38,7 @@ You can configure the CORDIC by selecting which pre- and postprocessor is used. 
 
 This determines what the binary numbers represent:
 - `"fixed-point"` - standard fixed-point representation
-- `"pi"` - values range from -pi to +pi.
+- `"pi"` - values range from -pi to +pi. Here, mantissa-bits and fraction-bits separation loses importance, what matters is their sum.
 
 The provided representation will affect constants, such as the arctan(h) values for angle computation and inverse CORDIC gain. Typically, `fixed-point` makes most sense, but `pi` allows very efficient comparisons with fractions of pi (needed in e.g. phase accumulator).
 
