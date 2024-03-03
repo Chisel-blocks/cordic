@@ -32,7 +32,10 @@ case class CordicTopIO(dataWidth: Int) extends Bundle {
 class CordicTop
   (val config: CordicConfig)
     extends Module {
-  
+
+      
+  override def desiredName = "cordic"
+
   val mantissaBits = config.mantissaBits
   val fractionBits = config.fractionBits
   val iterations = config.iterations
@@ -104,7 +107,7 @@ object CordicTop extends App {
   val parser1 = {
     import builder._
     OParser.sequence(
-      programName("CordicTop"),
+      programName("cordic"),
       opt[String]('t', "target_dir")
         .action((x, c) => c.copy(td = x))
         .text("Verilog target directory"),

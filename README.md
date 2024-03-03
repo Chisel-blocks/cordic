@@ -5,7 +5,7 @@ Generic pipelined CORDIC that supports rotation/vectoring and circular/hyperboli
 ```
 ./configure && make config=basic CordicTop
 ```
-generates CordicTop.v to verilog/ folder.
+generates cordic.v to verilog/ folder.
 ## Configurability
 CORDIC is configurable by a YAML file. They are located under `configs` folder. Next, we explain what different options are available.
 ### Mode and rotation type
