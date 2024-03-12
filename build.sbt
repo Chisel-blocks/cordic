@@ -13,9 +13,9 @@ resolvers += "A-Core Gitlab" at "https://gitlab.com/api/v4/groups/13348068/-/pac
 
 ambaVersion := "0.5+"
 
-lazy val CordicTop = (project in file("."))
+lazy val cordic = (project in file("."))
   .settings(
-    name := "CordicTop",
+    name := "Cordic",
     libraryDependencies ++= Seq(
       //"org.chipsalliance" %% "chisel" % chiselVersion,
       "edu.berkeley.cs" %% "chisel3" % chiselVersion,
