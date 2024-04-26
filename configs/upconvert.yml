@@ -1,5 +1,5 @@
 mantissa-bits: 3
-fraction-bits: 14
+fraction-bits: 13
 iterations: 16
 preprocessor-class: "UpConvert"
 postprocessor-class: "UpConvert"
