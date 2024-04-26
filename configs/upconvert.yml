@@ -6,6 +6,7 @@ postprocessor-class: "UpConvert"
 number-repr: "pi"
 enable-circular: true
 enable-rotational: true
+used-inputs: [1, 2]
 up-convert-config:
   use-phase-accum: true
   phase-accum-width: 24
