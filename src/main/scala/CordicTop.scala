@@ -5,13 +5,17 @@
 package cordic
 
 import chisel3._
-import chisel3.util.{ValidIO, log2Ceil}
+import chisel3.util.{ValidIO, log2Ceil, RegEnable}
 import chisel3.stage.{ChiselStage}
 import chisel3.stage.ChiselGeneratorAnnotation
+import chisel3.experimental.ExtModule
 import scopt.OParser
 import java.io.File
-import chisel3.util.RegEnable
 import cordic.config._
+
+trait hasCordicTopIO {
+  def io: CordicTopIO
+}
 
 case class CordicTopIO(
   dataWidth: Int,
@@ -42,11 +46,26 @@ case class CordicTopIO(
 
 }
 
+class CordicBlackBox(config: CordicConfig) extends ExtModule with hasCordicTopIO {
+  override val desiredName = "cordic"
+  val io = IO(CordicTopIO(
+    dataWidth = config.mantissaBits + config.fractionBits,
+    useIn1 = config.usedInputs.contains(1),
+    useIn2 = config.usedInputs.contains(2),
+    useIn3 = config.usedInputs.contains(3),
+    useOut1 = config.usedOutputs.contains(1),
+    useOut2 = config.usedOutputs.contains(2),
+    useOut3 = config.usedOutputs.contains(3),
+    useDout = config.useDout
+  ))
+  val clock = IO(Input(Bool()))
+  val reset = IO(Input(Bool()))
+}
+
 class CordicTop
   (val config: CordicConfig)
-    extends Module {
+    extends Module with hasCordicTopIO {
 
-      
   override def desiredName = "cordic"
 
   val mantissaBits = config.mantissaBits
