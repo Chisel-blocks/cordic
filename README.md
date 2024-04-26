@@ -42,11 +42,13 @@ This determines what the binary numbers represent:
 
 The provided representation will affect constants, such as the arctan(h) values for angle computation and inverse CORDIC gain. Typically, `fixed-point` makes most sense, but `pi` allows very efficient comparisons with fractions of pi (needed in e.g. phase accumulator).
 
-### Used inputs
-You can omit unused inputs from the CORDIC. For example, the upconvert config does not utilize `rs3` input, because it comes from the phase accumulator. In order to omit the rs3 input from IO list, you can use:
-- `"used-inputs"` - list of used inputs (1, 2, or 3)
+### Used inputs and outputs
+You can omit unused inputs and outputs from the CORDIC. For example, the upconvert config does not utilize `rs3` input, because it comes from the phase accumulator, or the `dOut` output. In order to omit IOs from IO list, you can use:
+- `"used-inputs"` - list of used inputs (1, 2, or 3) (default: `[1, 2, 3]`)
+- `"used-outputs"` - list of used outputs (1, 2, or 3) (default: `[1, 2, 3]`)
+- `"use-dout"` - boolean value (default: `true`)
 
-For example: `used-inputs: [1, 2]`. By default, it is `[1, 2, 3]`.
+For example: `used-inputs: [1, 2]`.
 
 ## Available pre- and postprocessors
 
