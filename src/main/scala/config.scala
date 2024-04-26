@@ -25,6 +25,7 @@ case class CordicConfig(
   enableHyperbolic: Boolean = false,
   enableRotational: Boolean = false,
   enableVectoring: Boolean = false,
+  usedInputs: List[Int] = List(0, 1, 2),
   upConvertConfig: Option[UpConvertConfig]
 )
 

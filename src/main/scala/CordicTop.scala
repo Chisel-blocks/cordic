@@ -13,12 +13,17 @@ import java.io.File
 import chisel3.util.RegEnable
 import cordic.config._
 
-case class CordicTopIO(dataWidth: Int) extends Bundle {
+case class CordicTopIO(
+  dataWidth: Int,
+  useRs1: Boolean,
+  useRs2: Boolean,
+  useRs3: Boolean
+  ) extends Bundle {
 
   val in = Input(ValidIO(new Bundle {
-    val rs1     = SInt(dataWidth.W)
-    val rs2     = SInt(dataWidth.W)
-    val rs3     = SInt(dataWidth.W)
+    val rs1     = if (useRs1) Some(SInt(dataWidth.W)) else None
+    val rs2     = if (useRs2) Some(SInt(dataWidth.W)) else None
+    val rs3     = if (useRs3) Some(SInt(dataWidth.W)) else None
     val control = UInt(32.W)
   }))
 
@@ -43,7 +48,10 @@ class CordicTop
   val preprocessorClass = config.preprocessorClass
   val postprocessorClass = config.postprocessorClass
 
-  val io = IO(CordicTopIO(mantissaBits + fractionBits))
+  val io = IO(CordicTopIO(dataWidth = mantissaBits + fractionBits,
+                          useRs1 = config.usedInputs.contains(1),
+                          useRs2 = config.usedInputs.contains(2),
+                          useRs3 = config.usedInputs.contains(3)))
 
   val preprocessor: CordicPreprocessor  = {
     if      (preprocessorClass == "Basic")     Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations, repr))
@@ -74,9 +82,9 @@ class CordicTop
   inValidReg  := io.in.valid
   outValidReg := io.out.valid
 
-  preprocessor.io.in.rs1     := inRegs.rs1
-  preprocessor.io.in.rs2     := inRegs.rs2
-  preprocessor.io.in.rs3     := inRegs.rs3
+  preprocessor.io.in.rs1     := inRegs.rs1.getOrElse(0.S)
+  preprocessor.io.in.rs2     := inRegs.rs2.getOrElse(0.S)
+  preprocessor.io.in.rs3     := inRegs.rs3.getOrElse(0.S)
   preprocessor.io.in.control := inRegs.control
   preprocessor.io.in.valid   := inValidReg
 

@@ -19,11 +19,11 @@ class AXI4LCordic(
 
   val cordic = Module(new CordicTop(config))
 
-  val inRegs = Reg(Vec(3, UInt(32.W)))
-  val outRegs = Reg(Vec(3, UInt(32.W)))
-  cordic.io.in.bits.rs1 := inRegs(0).asSInt
-  cordic.io.in.bits.rs2 := inRegs(1).asSInt
-  cordic.io.in.bits.rs3 := inRegs(2).asSInt
+  val inRegs = Wire(Vec(3, UInt(32.W)))
+  val outRegs = Wire(Vec(3, UInt(32.W)))
+  cordic.io.in.bits.rs1.get := inRegs(0).asSInt
+  cordic.io.in.bits.rs2.get := inRegs(1).asSInt
+  cordic.io.in.bits.rs3.get := inRegs(2).asSInt
   outRegs(0) := cordic.io.out.bits.cordic.x.asUInt
   outRegs(1) := cordic.io.out.bits.cordic.y.asUInt
   outRegs(2) := cordic.io.out.bits.cordic.z.asUInt
