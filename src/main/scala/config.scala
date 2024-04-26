@@ -26,6 +26,8 @@ case class CordicConfig(
   enableRotational: Boolean = false,
   enableVectoring: Boolean = false,
   usedInputs: List[Int] = List(1, 2, 3),
+  usedOutputs: List[Int] = List(1, 2, 3),
+  useDout: Boolean = true,
   upConvertConfig: Option[UpConvertConfig]
 )
 

@@ -24,9 +24,9 @@ class AXI4LCordic(
   cordic.io.in.bits.rs1.get := inRegs(0).asSInt
   cordic.io.in.bits.rs2.get := inRegs(1).asSInt
   cordic.io.in.bits.rs3.get := inRegs(2).asSInt
-  outRegs(0) := cordic.io.out.bits.cordic.x.asUInt
-  outRegs(1) := cordic.io.out.bits.cordic.y.asUInt
-  outRegs(2) := cordic.io.out.bits.cordic.z.asUInt
+  outRegs(0) := cordic.io.out.bits.cordic.x.get.asUInt
+  outRegs(1) := cordic.io.out.bits.cordic.y.get.asUInt
+  outRegs(2) := cordic.io.out.bits.cordic.z.get.asUInt
   // Memory map for input and output registers
   val memory_map = Map[Data, MemoryRange](
     inRegs(0) -> MemoryRange(begin = 0, end = 3, mode = MemoryMode.W, name = "x_in"),

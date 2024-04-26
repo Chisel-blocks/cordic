@@ -15,21 +15,29 @@ import cordic.config._
 
 case class CordicTopIO(
   dataWidth: Int,
-  useRs1: Boolean,
-  useRs2: Boolean,
-  useRs3: Boolean
+  useIn1: Boolean,
+  useIn2: Boolean,
+  useIn3: Boolean,
+  useOut1: Boolean,
+  useOut2: Boolean,
+  useOut3: Boolean,
+  useDout: Boolean
   ) extends Bundle {
 
   val in = Input(ValidIO(new Bundle {
-    val rs1     = if (useRs1) Some(SInt(dataWidth.W)) else None
-    val rs2     = if (useRs2) Some(SInt(dataWidth.W)) else None
-    val rs3     = if (useRs3) Some(SInt(dataWidth.W)) else None
+    val rs1     = if (useIn1) Some(SInt(dataWidth.W)) else None
+    val rs2     = if (useIn2) Some(SInt(dataWidth.W)) else None
+    val rs3     = if (useIn3) Some(SInt(dataWidth.W)) else None
     val control = UInt(32.W)
   }))
 
   val out = Output(ValidIO(new Bundle {
-    val cordic = CordicBundle(dataWidth)
-    val dOut   = SInt(dataWidth.W)
+    val cordic = new Bundle {
+      val x = if (useOut1) Some(SInt(dataWidth.W)) else None
+      val y = if (useOut2) Some(SInt(dataWidth.W)) else None
+      val z = if (useOut3) Some(SInt(dataWidth.W)) else None
+    }
+    val dOut   = if (useDout) Some(SInt(dataWidth.W)) else None
   }))
 
 }
@@ -49,9 +57,13 @@ class CordicTop
   val postprocessorClass = config.postprocessorClass
 
   val io = IO(CordicTopIO(dataWidth = mantissaBits + fractionBits,
-                          useRs1 = config.usedInputs.contains(1),
-                          useRs2 = config.usedInputs.contains(2),
-                          useRs3 = config.usedInputs.contains(3)))
+                          useIn1 = config.usedInputs.contains(1),
+                          useIn2 = config.usedInputs.contains(2),
+                          useIn3 = config.usedInputs.contains(3),
+                          useOut1 = config.usedOutputs.contains(1),
+                          useOut2 = config.usedOutputs.contains(2),
+                          useOut3 = config.usedOutputs.contains(3),
+                          useDout = config.useDout))
 
   val preprocessor: CordicPreprocessor  = {
     if      (preprocessorClass == "Basic")     Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations, repr))
@@ -98,7 +110,11 @@ class CordicTop
   outRegs.dOut    := postprocessor.io.out.dOut
   outValidReg     := cordicCore.io.out.valid
 
-  io.out.bits  := outRegs
+  if(config.usedOutputs.contains(1)) io.out.bits.cordic.x.get := outRegs.cordic.x
+  if(config.usedOutputs.contains(2)) io.out.bits.cordic.y.get := outRegs.cordic.y
+  if(config.usedOutputs.contains(3)) io.out.bits.cordic.z.get := outRegs.cordic.z
+  if(config.useDout)                 io.out.bits.dOut.get     := outRegs.dOut
+
   io.out.valid := outValidReg
 
 }
