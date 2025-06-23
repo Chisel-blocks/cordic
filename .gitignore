@@ -25,3 +25,4 @@ src/test/cocotb/gpio/sim_build/*
 **/TestFloat-3e/**
 **/sim_build
 results.xml
+configs/
