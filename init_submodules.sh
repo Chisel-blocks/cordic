@@ -11,7 +11,6 @@ for module in $SUBMODULES; do
     if [ -f "./init_submodules.sh" ]; then
         ./init_submodules.sh
     fi
-    sbt publishLocal
     cd ${DIR}
 done
 
