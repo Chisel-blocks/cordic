@@ -26,16 +26,17 @@ async def test_circ_rot_operation(dut):
     dut.io_in_bits_control_mode.value = 0
     dut.io_in_bits_control_rotType.value = 0
     dut.io_in_valid.value = 1
+    dut.io_out_ready.value = 1
     await RisingEdge(dut.clock)
     dut.io_in_valid.value = 0
 
-    await ClockCycles(dut.clock, 20)
+    await ClockCycles(dut.clock, 19)
     assert dut.io_out_valid == 1, f"Valid should be 1, was {dut.io_out_valid}"
-    assert dut.io_out_bits_y.value.signed_integer in [
+    assert dut.io_out_bits_cordic_y.value.signed_integer in [
         -1,
         0,
         1,
-    ], f"Y should be zero +- 1, was {dut.io_out_bits_y.value}"
+    ], f"Y should be zero +- 1, was {dut.io_out_bits_cordic_y.value}"
 
 
 @cocotb.test()
@@ -61,14 +62,15 @@ async def test_circ_vec_operation(dut):
     dut.io_in_bits_control_mode.value = 1
     dut.io_in_bits_control_rotType.value = 0
     dut.io_in_valid.value = 1
+    dut.io_out_ready.value = 1
     await RisingEdge(dut.clock)
     dut.io_in_valid.value = 0
 
-    await ClockCycles(dut.clock, 20)
+    await ClockCycles(dut.clock, 19)
     assert dut.io_out_valid == 1, f"Valid should be 1, was {dut.io_out_valid}"
-    assert dut.io_out_bits_y.value.signed_integer in [
+    assert dut.io_out_bits_cordic_y.value.signed_integer in [
         -3, -2, -1, 0, 1, 2, 3
-    ], f"Y should be zero +- 3, was {dut.io_out_bits_y.value}"
+    ], f"Y should be zero +- 3, was {dut.io_out_bits_cordic_y.value}"
 
 
 @cocotb.test()
@@ -94,14 +96,15 @@ async def test_hyper_rot_operation(dut):
     dut.io_in_bits_control_mode.value = 0
     dut.io_in_bits_control_rotType.value = 1
     dut.io_in_valid.value = 1
+    dut.io_out_ready.value = 1
     await RisingEdge(dut.clock)
     dut.io_in_valid.value = 0
 
-    await ClockCycles(dut.clock, 20)
+    await ClockCycles(dut.clock, 19)
     assert dut.io_out_valid == 1, f"Valid should be 1, was {dut.io_out_valid}"
-    assert dut.io_out_bits_z.value.signed_integer in [
+    assert dut.io_out_bits_cordic_z.value.signed_integer in [
         -1, 0, 1
-    ], f"Z should be zero +- 1, was {dut.io_out_bits_z.value}"
+    ], f"Z should be zero +- 1, was {dut.io_out_bits_cordic_z.value}"
 
 
 @cocotb.test()
@@ -127,11 +130,12 @@ async def test_hyper_vec_operation(dut):
     dut.io_in_bits_control_mode.value = 1
     dut.io_in_bits_control_rotType.value = 1
     dut.io_in_valid.value = 1
+    dut.io_out_ready.value = 1
     await RisingEdge(dut.clock)
     dut.io_in_valid.value = 0
 
-    await ClockCycles(dut.clock, 20)
+    await ClockCycles(dut.clock, 19)
     assert dut.io_out_valid == 1, f"Valid should be 1, was {dut.io_out_valid}"
-    assert dut.io_out_bits_y.value.signed_integer in [
+    assert dut.io_out_bits_cordic_y.value.signed_integer in [
         -1, 0, 1
-    ], f"Y should be zero +- 1, was {dut.io_out_bits_y.value}"
+    ], f"Y should be zero +- 1, was {dut.io_out_bits_cordic_y.value}"
