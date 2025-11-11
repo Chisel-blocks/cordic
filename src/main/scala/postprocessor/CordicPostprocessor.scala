@@ -6,25 +6,25 @@ package cordic
 
 import chisel3._
 import chisel3.experimental._
-import chisel3.util.{MuxCase, log2Ceil}
+import chisel3.util.{MuxCase, log2Ceil, DecoupledIO}
 import chisel3.stage.{ChiselStage}
 import chisel3.stage.ChiselGeneratorAnnotation
 
 case class CordicPostprocessorIO(dataWidth: Int) extends Bundle {
 
-  val in = new Bundle {
+  val in = Flipped(DecoupledIO(new Bundle {
     val cordic  = Input(CordicBundle(dataWidth))
     val control = Input(CordicCoreControl())
-  }
+  }))
 
-  val out = new Bundle {
+  val out = DecoupledIO(new Bundle {
 
     /** Bundle of post processed x, y, and z */
     val cordic = Output(CordicBundle(dataWidth))
 
     /** Additional output signal to be freely used */
     val dOut = Output(SInt(dataWidth.W))
-  }
+  })
 
 }
 

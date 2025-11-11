@@ -6,13 +6,13 @@ package cordic
 
 import chisel3._
 import chisel3.experimental._
-import chisel3.util.{MuxCase, log2Ceil}
+import chisel3.util.{MuxCase, log2Ceil, DecoupledIO}
 import chisel3.stage.{ChiselStage}
 import chisel3.stage.ChiselGeneratorAnnotation
 
 case class CordicPreprocessorIO(dataWidth: Int) extends Bundle {
 
-  val in = new Bundle {
+  val in = Flipped(DecoupledIO(new Bundle {
     /** Source register 1 */
     val rs1     = Input(SInt(dataWidth.W))
     /** Source register 2 */
@@ -21,16 +21,14 @@ case class CordicPreprocessorIO(dataWidth: Int) extends Bundle {
     val rs3     = Input(SInt(dataWidth.W))
     /** Control bits */
     val control = Input(UInt())
-    /** Indicates new input data */
-    val valid   = Input(Bool())
-  }
+  }))
 
-  val out = new Bundle {
+  val out = DecoupledIO(new Bundle {
     /** Outputs to CordicCore */
     val cordic  = Output(CordicBundle(dataWidth))
     /** Control bundle */
     val control = Output(CordicCoreControl())
-  }
+  })
 
 }
 

@@ -5,7 +5,7 @@
 package cordic
 
 import chisel3._
-import chisel3.util.{ValidIO, log2Ceil, RegEnable}
+import chisel3.util.{DecoupledIO, log2Ceil, RegEnable, Queue}
 import chisel3.stage.{ChiselStage}
 import chisel3.stage.ChiselGeneratorAnnotation
 import chisel3.experimental.ExtModule
@@ -28,21 +28,21 @@ case class CordicTopIO(
   useDout: Boolean
   ) extends Bundle {
 
-  val in = Input(ValidIO(new Bundle {
+  val in = Flipped(DecoupledIO(new Bundle {
     val rs1     = if (useIn1) Some(SInt(dataWidth.W)) else None
     val rs2     = if (useIn2) Some(SInt(dataWidth.W)) else None
     val rs3     = if (useIn3) Some(SInt(dataWidth.W)) else None
     val control = UInt(32.W)
   }))
 
-  val out = Output(ValidIO(new Bundle {
+  val out = DecoupledIO(new Bundle {
     val cordic = new Bundle {
       val x = if (useOut1) Some(SInt(dataWidth.W)) else None
       val y = if (useOut2) Some(SInt(dataWidth.W)) else None
       val z = if (useOut3) Some(SInt(dataWidth.W)) else None
     }
     val dOut   = if (useDout) Some(SInt(dataWidth.W)) else None
-  }))
+  })
 
 }
 
@@ -106,35 +106,34 @@ class CordicTop
                                          config.enableRotational,
                                          config.enableVectoring))
 
-  val inRegs      = RegEnable(io.in.bits, io.in.valid)
-  val outRegs     = RegEnable(postprocessor.io.out, cordicCore.io.out.valid)
-  val inValidReg  = RegInit(false.B)
-  val outValidReg = RegInit(false.B)
-  inValidReg  := io.in.valid
-  outValidReg := io.out.valid
+  val inRegs      = Module(new Queue(chiselTypeOf(io.in.bits), 2))
+  val outRegs     = Module(new Queue(chiselTypeOf(io.out.bits), 2))
 
-  preprocessor.io.in.rs1     := inRegs.rs1.getOrElse(0.S)
-  preprocessor.io.in.rs2     := inRegs.rs2.getOrElse(0.S)
-  preprocessor.io.in.rs3     := inRegs.rs3.getOrElse(0.S)
-  preprocessor.io.in.control := inRegs.control
-  preprocessor.io.in.valid   := inValidReg
 
-  cordicCore.io.in.bits  := preprocessor.io.out
-  cordicCore.io.in.valid := inValidReg
 
-  postprocessor.io.in.cordic  := cordicCore.io.out.bits.cordic
-  postprocessor.io.in.control := cordicCore.io.out.bits.control
+  preprocessor.io.in.bits.rs1     := inRegs.io.deq.bits.rs1.getOrElse(0.S)
+  preprocessor.io.in.bits.rs2     := inRegs.io.deq.bits.rs2.getOrElse(0.S)
+  preprocessor.io.in.bits.rs3     := inRegs.io.deq.bits.rs3.getOrElse(0.S)
+  preprocessor.io.in.bits.control := inRegs.io.deq.bits.control
+  preprocessor.io.in.valid        := inRegs.io.deq.valid
+  inRegs.io.deq.ready             := preprocessor.io.in.ready
 
-  outRegs.cordic  := postprocessor.io.out.cordic
-  outRegs.dOut    := postprocessor.io.out.dOut
-  outValidReg     := cordicCore.io.out.valid
+  cordicCore.io.in <> preprocessor.io.out
 
-  if(config.usedOutputs.contains(1)) io.out.bits.cordic.x.get := outRegs.cordic.x
-  if(config.usedOutputs.contains(2)) io.out.bits.cordic.y.get := outRegs.cordic.y
-  if(config.usedOutputs.contains(3)) io.out.bits.cordic.z.get := outRegs.cordic.z
-  if(config.useDout)                 io.out.bits.dOut.get     := outRegs.dOut
+  postprocessor.io.in <> cordicCore.io.out 
 
-  io.out.valid := outValidReg
+  outRegs.io.enq.bits.cordic   := postprocessor.io.out.bits.cordic
+  outRegs.io.enq.valid         := postprocessor.io.out.valid
+  postprocessor.io.out.ready   := outRegs.io.enq.ready
+  if (config.useDout) outRegs.io.enq.bits.dOut.get := postprocessor.io.out.bits.dOut
+
+  if(config.usedOutputs.contains(1)) io.out.bits.cordic.x.get := outRegs.io.deq.bits.cordic.x.get
+  if(config.usedOutputs.contains(2)) io.out.bits.cordic.y.get := outRegs.io.deq.bits.cordic.y.get
+  if(config.usedOutputs.contains(3)) io.out.bits.cordic.z.get := outRegs.io.deq.bits.cordic.z.get
+  if(config.useDout)                 io.out.bits.dOut.get     := outRegs.io.deq.bits.dOut.get
+
+  inRegs.io.enq <> io.in
+  io.out        <> outRegs.io.deq
 
 }
 

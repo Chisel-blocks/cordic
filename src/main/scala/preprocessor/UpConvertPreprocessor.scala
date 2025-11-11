@@ -25,7 +25,7 @@ class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
 
   val phaseAccum = RegInit(0.S(config.phaseAccumWidth.W))
   // Control word sets the frequency
-  val controlWord = io.in.control.asSInt
+  val controlWord = io.in.bits.control.asSInt
 
   if (config.usePhaseAccum) {
     when (io.in.valid) {
@@ -36,7 +36,7 @@ class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
   // Use MSB bits for phase value
   val phase = {
     if (config.usePhaseAccum) phaseAccum.head(mantissaBits + fractionBits).asSInt
-    else io.in.rs3
+    else io.in.bits.rs3
   }
 
   // TODO: check if it should be >= or <= for efficient hw
@@ -59,15 +59,18 @@ class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
   val adder = addA + addB
   val subtractor = subA - subB
 
-  val rs1_neg = ~io.in.rs1 + 1.S
-  val rs2_neg = ~io.in.rs2 + 1.S
+  val rs1_neg = ~io.in.bits.rs1 + 1.S
+  val rs2_neg = ~io.in.bits.rs2 + 1.S
 
-  io.out.cordic.x := MuxCase(io.in.rs1, Seq(largerThanPiOver2 -> rs2_neg, smallerThanNegPiOver2 -> io.in.rs2))
-  io.out.cordic.y := MuxCase(io.in.rs2, Seq(largerThanPiOver2 -> io.in.rs1, smallerThanNegPiOver2 -> rs1_neg))
-  io.out.cordic.z := MuxCase(phase, Seq(largerThanPiOver2 -> subtractor, smallerThanNegPiOver2 -> adder))
-  io.out.control.rotType := CordicRotationType.CIRCULAR
-  io.out.control.mode := CordicMode.ROTATION
+  io.out.bits.cordic.x := MuxCase(io.in.bits.rs1, Seq(largerThanPiOver2 -> rs2_neg, smallerThanNegPiOver2 -> io.in.bits.rs2))
+  io.out.bits.cordic.y := MuxCase(io.in.bits.rs2, Seq(largerThanPiOver2 -> io.in.bits.rs1, smallerThanNegPiOver2 -> rs1_neg))
+  io.out.bits.cordic.z := MuxCase(phase, Seq(largerThanPiOver2 -> subtractor, smallerThanNegPiOver2 -> adder))
+  io.out.bits.control.rotType := CordicRotationType.CIRCULAR
+  io.out.bits.control.mode := CordicMode.ROTATION
 
-  io.out.control.custom := 0.U
+  io.out.bits.control.custom := 0.U
+
+  io.out.valid := io.in.valid
+  io.in.ready := io.out.ready
 
 }

@@ -21,64 +21,67 @@ class TrigFuncPostprocessor(mantissaBits: Int, fractionBits: Int,
   extends CordicPostprocessor(mantissaBits, fractionBits, iterations, repr) {
 
   // Rescaling needed if it was performed in perprocessor
-  val rescale = io.in.control.custom(TrigFuncControl.LTPO2) || io.in.control.custom(TrigFuncControl.STNPO2)
+  val rescale = io.in.bits.control.custom(TrigFuncControl.LTPO2) || io.in.bits.control.custom(TrigFuncControl.STNPO2)
 
   // Either x or y needs to be rescaled, depending on SINE or COSINE operation
   val adderA = WireDefault(0.S)
-  when (io.in.control.custom(31,2) === TrigOp.SINE.asUInt) {
-    adderA := ~io.in.cordic.y
-  } .elsewhen(io.in.control.custom(31,2) === TrigOp.COSINE.asUInt) {
-    adderA := ~io.in.cordic.x
+  when (io.in.bits.control.custom(31,2) === TrigOp.SINE.asUInt) {
+    adderA := ~io.in.bits.cordic.y
+  } .elsewhen(io.in.bits.control.custom(31,2) === TrigOp.COSINE.asUInt) {
+    adderA := ~io.in.bits.cordic.x
   }
 
   // Rescale from negative to positive, or vice versa
   val rescaled = adderA + 1.S
 
-  when (io.in.control.custom(31,2) === TrigOp.SINE.asUInt) {
-    io.out.cordic.x := io.in.cordic.x
-    io.out.cordic.y := Mux(rescale, rescaled, io.in.cordic.y)
-    io.out.cordic.z := io.in.cordic.z
-    io.out.dOut     := io.out.cordic.y
-  } .elsewhen(io.in.control.custom(31,2) === TrigOp.COSINE.asUInt) {
-    io.out.cordic.x := Mux(rescale, rescaled, io.in.cordic.x)
-    io.out.cordic.y := io.in.cordic.y
-    io.out.cordic.z := io.in.cordic.z
-    io.out.dOut     := io.out.cordic.x
-  } .elsewhen(io.in.control.custom(31,2) === TrigOp.ARCTAN.asUInt) {
-    io.out.cordic.x := io.in.cordic.x
-    io.out.cordic.y := io.in.cordic.y
-    io.out.cordic.z := io.in.cordic.z
-    io.out.dOut     := io.out.cordic.z
-  } .elsewhen(io.in.control.custom(31,2) === TrigOp.SINH.asUInt) {
-    io.out.cordic.x := io.in.cordic.x
-    io.out.cordic.y := io.in.cordic.y
-    io.out.cordic.z := io.in.cordic.z
-    io.out.dOut     := io.out.cordic.y
-  } .elsewhen(io.in.control.custom(31,2) === TrigOp.COSH.asUInt) {
-    io.out.cordic.x := io.in.cordic.x
-    io.out.cordic.y := io.in.cordic.y
-    io.out.cordic.z := io.in.cordic.z
-    io.out.dOut     := io.out.cordic.x
-  } .elsewhen(io.in.control.custom(31,2) === TrigOp.ARCTANH.asUInt) {
-    io.out.cordic.x := io.in.cordic.x
-    io.out.cordic.y := io.in.cordic.y
-    io.out.cordic.z := io.in.cordic.z
-    io.out.dOut     := io.out.cordic.z
-  } .elsewhen(io.in.control.custom(31,2) === TrigOp.EXPONENTIAL.asUInt) {
-    io.out.cordic.x := io.in.cordic.x
-    io.out.cordic.y := io.in.cordic.y
-    io.out.cordic.z := io.in.cordic.z
-    io.out.dOut     := io.out.cordic.x
-  } .elsewhen(io.in.control.custom(31,2) === TrigOp.LOG.asUInt) {
-    io.out.cordic.x := io.in.cordic.x
-    io.out.cordic.y := io.in.cordic.y
-    io.out.cordic.z := io.in.cordic.z
+  when (io.in.bits.control.custom(31,2) === TrigOp.SINE.asUInt) {
+    io.out.bits.cordic.x := io.in.bits.cordic.x
+    io.out.bits.cordic.y := Mux(rescale, rescaled, io.in.bits.cordic.y)
+    io.out.bits.cordic.z := io.in.bits.cordic.z
+    io.out.bits.dOut     := io.out.bits.cordic.y
+  } .elsewhen(io.in.bits.control.custom(31,2) === TrigOp.COSINE.asUInt) {
+    io.out.bits.cordic.x := Mux(rescale, rescaled, io.in.bits.cordic.x)
+    io.out.bits.cordic.y := io.in.bits.cordic.y
+    io.out.bits.cordic.z := io.in.bits.cordic.z
+    io.out.bits.dOut     := io.out.bits.cordic.x
+  } .elsewhen(io.in.bits.control.custom(31,2) === TrigOp.ARCTAN.asUInt) {
+    io.out.bits.cordic.x := io.in.bits.cordic.x
+    io.out.bits.cordic.y := io.in.bits.cordic.y
+    io.out.bits.cordic.z := io.in.bits.cordic.z
+    io.out.bits.dOut     := io.out.bits.cordic.z
+  } .elsewhen(io.in.bits.control.custom(31,2) === TrigOp.SINH.asUInt) {
+    io.out.bits.cordic.x := io.in.bits.cordic.x
+    io.out.bits.cordic.y := io.in.bits.cordic.y
+    io.out.bits.cordic.z := io.in.bits.cordic.z
+    io.out.bits.dOut     := io.out.bits.cordic.y
+  } .elsewhen(io.in.bits.control.custom(31,2) === TrigOp.COSH.asUInt) {
+    io.out.bits.cordic.x := io.in.bits.cordic.x
+    io.out.bits.cordic.y := io.in.bits.cordic.y
+    io.out.bits.cordic.z := io.in.bits.cordic.z
+    io.out.bits.dOut     := io.out.bits.cordic.x
+  } .elsewhen(io.in.bits.control.custom(31,2) === TrigOp.ARCTANH.asUInt) {
+    io.out.bits.cordic.x := io.in.bits.cordic.x
+    io.out.bits.cordic.y := io.in.bits.cordic.y
+    io.out.bits.cordic.z := io.in.bits.cordic.z
+    io.out.bits.dOut     := io.out.bits.cordic.z
+  } .elsewhen(io.in.bits.control.custom(31,2) === TrigOp.EXPONENTIAL.asUInt) {
+    io.out.bits.cordic.x := io.in.bits.cordic.x
+    io.out.bits.cordic.y := io.in.bits.cordic.y
+    io.out.bits.cordic.z := io.in.bits.cordic.z
+    io.out.bits.dOut     := io.out.bits.cordic.x
+  } .elsewhen(io.in.bits.control.custom(31,2) === TrigOp.LOG.asUInt) {
+    io.out.bits.cordic.x := io.in.bits.cordic.x
+    io.out.bits.cordic.y := io.in.bits.cordic.y
+    io.out.bits.cordic.z := io.in.bits.cordic.z
     // CORDIC returns 0.5*log - this multiplies by 2
-    io.out.dOut     := io.out.cordic.z << 1
+    io.out.bits.dOut     := io.out.bits.cordic.z << 1
   } .otherwise {
-    io.out.cordic.x := DontCare
-    io.out.cordic.y := DontCare
-    io.out.cordic.z := DontCare
-    io.out.dOut     := DontCare
+    io.out.bits.cordic.x := DontCare
+    io.out.bits.cordic.y := DontCare
+    io.out.bits.cordic.z := DontCare
+    io.out.bits.dOut     := DontCare
   }
+
+  io.out.valid := io.in.valid
+  io.in.ready := io.out.ready
 }

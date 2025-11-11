@@ -21,7 +21,9 @@ class BasicPostprocessor(mantissaBits: Int, fractionBits: Int,
                          iterations: Int, repr: String)
   extends CordicPostprocessor(mantissaBits, fractionBits, iterations, repr) {
 
-  io.out.cordic <> io.in.cordic
-  io.out.dOut   := 0.S
+  io.out.bits.cordic <> io.in.bits.cordic
+  io.out.bits.dOut   := 0.S
+  io.out.valid := io.in.valid
+  io.in.ready := io.out.ready
 
 }
