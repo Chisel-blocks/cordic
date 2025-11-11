@@ -64,7 +64,7 @@ class CordicCore(mantissaBits: Int,
   val inValidReg = RegInit(false.B)
   inValidReg := io.in.valid
 
-  val adders = Seq.fill(totalIterations)(Seq.fill(3)(Module(new AdderSubtractor(mantissaBits + fractionBits))))
+  val adders = Seq.fill(totalIterations)(Seq.fill(3)(Module(new AdderSubtractorAlt(mantissaBits + fractionBits))))
 
   val inWires      = Seq.fill(totalIterations)(Wire(chiselTypeOf(io.in)))
   val outWires     = Seq.fill(totalIterations)(Wire(chiselTypeOf(io.in)))
