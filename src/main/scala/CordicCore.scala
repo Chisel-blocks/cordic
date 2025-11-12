@@ -1,21 +1,21 @@
 package cordic
 
 import chisel3._
-import chisel3.util.{ValidIO, RegEnable, Fill, Cat}
+import chisel3.util.{ValidIO, DecoupledIO, RegEnable, Fill, Cat}
 import chisel3.stage.{ChiselStage}
 import chisel3.stage.ChiselGeneratorAnnotation
 
 case class CordicCoreIO(dataWidth: Int) extends Bundle {
 
-  val in = Input(ValidIO(new Bundle {
+  val in = Flipped(DecoupledIO(new Bundle {
     val cordic  = CordicBundle(dataWidth)
     val control = CordicCoreControl()
   }))
 
-  val out = Output(ValidIO(new Bundle {
+  val out = DecoupledIO(new Bundle {
     val cordic  = CordicBundle(dataWidth)
     val control = CordicCoreControl()
-  }))
+  })
 
 }
 
@@ -60,18 +60,18 @@ class CordicCore(mantissaBits: Int,
   val totalIterations = if (enableHyperbolic) iterations + nRepeats
                         else                  iterations
 
-  val inRegs     = RegEnable(io.in.bits, io.in.valid)
-  val inValidReg = RegInit(false.B)
-  inValidReg := io.in.valid
+  val inRegs     = RegEnable(io.in.bits, io.out.ready)
+  val inValidReg = RegEnable(io.in.valid, false.B, io.out.ready)
 
-  val adders = Seq.fill(totalIterations)(Seq.fill(3)(Module(new AdderSubtractor(mantissaBits + fractionBits))))
+  val adders = Seq.fill(totalIterations)(Seq.fill(3)(Module(new AdderSubtractorAlt(mantissaBits + fractionBits))))
 
   val inWires      = Seq.fill(totalIterations)(Wire(chiselTypeOf(io.in)))
   val outWires     = Seq.fill(totalIterations)(Wire(chiselTypeOf(io.in)))
-  val pipelineRegs = Seq.tabulate(totalIterations)(i => RegEnable(outWires(i).bits, outWires(i).valid))
-  val validRegs    = Seq.tabulate(totalIterations)(i => RegInit(false.B))
+  val pipelineRegs = Seq.tabulate(totalIterations)(i => RegEnable(outWires(i).bits, io.out.ready))
+  val validRegs    = Seq.tabulate(totalIterations)(i => RegEnable(outWires(i).valid, false.B, io.out.ready))
 
-  validRegs.zip(outWires).map { case (validReg, outWire) => validReg := outWire.valid }
+  inWires.foreach(_.ready := false.B)
+  outWires.foreach(_.ready := false.B)
   inWires(0).bits  := inRegs
   inWires(0).valid := inValidReg
 
@@ -192,6 +192,7 @@ class CordicCore(mantissaBits: Int,
 
   io.out.bits  := pipelineRegs(totalIterations - 1)
   io.out.valid := validRegs(totalIterations - 1)
+  io.in.ready  := io.out.ready
 }
 
 object CordicCore extends App {
@@ -199,7 +200,7 @@ object CordicCore extends App {
   // These lines generate the Verilog output
   (new ChiselStage).execute(
     { Array() ++ args },
-    Seq(ChiselGeneratorAnnotation(() => new CordicCore(4, 12, 14,
+    Seq(ChiselGeneratorAnnotation(() => new CordicCore(4, 12, 16,
                                                        "fixed-point", true, true, true, true)))
   )
 

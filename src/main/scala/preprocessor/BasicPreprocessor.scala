@@ -22,13 +22,16 @@ class BasicPreprocessor(mantissaBits: Int, fractionBits: Int,
                            iterations: Int, repr: String)
   extends CordicPreprocessor(mantissaBits, fractionBits, iterations, repr) {
 
-  io.out.cordic.x := io.in.rs1
-  io.out.cordic.y := io.in.rs2
-  io.out.cordic.z := io.in.rs3
+  io.out.bits.cordic.x := io.in.bits.rs1
+  io.out.bits.cordic.y := io.in.bits.rs2
+  io.out.bits.cordic.z := io.in.bits.rs3
 
-  io.out.control.rotType := Mux(io.in.control(0), CordicRotationType.HYPERBOLIC, CordicRotationType.CIRCULAR)
-  io.out.control.mode    := Mux(io.in.control(1), CordicMode.VECTORING, CordicMode.ROTATION)
-  io.out.control.custom  := 0.U
+  io.out.bits.control.rotType := Mux(io.in.bits.control(0), CordicRotationType.HYPERBOLIC, CordicRotationType.CIRCULAR)
+  io.out.bits.control.mode    := Mux(io.in.bits.control(1), CordicMode.VECTORING, CordicMode.ROTATION)
+  io.out.bits.control.custom  := 0.U
+
+  io.out.valid := io.in.valid
+  io.in.ready  := io.out.ready
 
 }
 

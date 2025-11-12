@@ -38,6 +38,25 @@ class AdderSubtractor(bits: Int) extends Module {
   io.S := S_vec.asTypeOf(SInt(bits.W))
 }
 
+/** Adder Subtractor combinatorial module. 
+  * Calculates either addition or 
+  * subtraction depending on input D.
+  *
+  * D = false -> Addition
+  * 
+  * D = true -> Subtraction
+  *
+  * @param bits
+  *   How many bits inputs and outputs are
+  */
+class AdderSubtractorAlt(bits: Int) extends Module {
+  val io    = IO(AdderSubtractorIO(bits))
+
+  val op_b = Mux(io.D, ~io.B + 1.S, io.B)
+
+  io.S := io.A + op_b
+}
+
 object AdderSubtractor extends App {
   // These lines generate the Verilog output
   (new ChiselStage).execute(
