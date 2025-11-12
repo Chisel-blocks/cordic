@@ -1,6 +1,8 @@
 # Pipelined generic CORDIC
 
 Generic pipelined CORDIC that supports rotation/vectoring and circular/hyperbolic modes. Due to the pipelined nature, it will generate quite a lot of hardware, but will have a throughput of one operation per clock cycle.
+
+`Decoupled` interface allows full sample-by-sample flow control.
 ## Example
 ```
 ./configure && make config=basic CordicTop
