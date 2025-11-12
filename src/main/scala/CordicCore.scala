@@ -60,18 +60,16 @@ class CordicCore(mantissaBits: Int,
   val totalIterations = if (enableHyperbolic) iterations + nRepeats
                         else                  iterations
 
-  val inRegs     = RegEnable(io.in.bits, io.in.valid && io.out.ready)
-  val inValidReg = RegInit(false.B)
-  inValidReg := io.in.valid && io.out.ready
+  val inRegs     = RegEnable(io.in.bits, io.out.ready)
+  val inValidReg = RegEnable(io.in.valid, false.B, io.out.ready)
 
   val adders = Seq.fill(totalIterations)(Seq.fill(3)(Module(new AdderSubtractorAlt(mantissaBits + fractionBits))))
 
   val inWires      = Seq.fill(totalIterations)(Wire(chiselTypeOf(io.in)))
   val outWires     = Seq.fill(totalIterations)(Wire(chiselTypeOf(io.in)))
-  val pipelineRegs = Seq.tabulate(totalIterations)(i => RegEnable(outWires(i).bits, outWires(i).valid && io.out.ready))
-  val validRegs    = Seq.tabulate(totalIterations)(i => RegInit(false.B))
+  val pipelineRegs = Seq.tabulate(totalIterations)(i => RegEnable(outWires(i).bits, io.out.ready))
+  val validRegs    = Seq.tabulate(totalIterations)(i => RegEnable(outWires(i).valid, false.B, io.out.ready))
 
-  validRegs.zip(outWires).map { case (validReg, outWire) => validReg := outWire.valid && io.out.ready }
   inWires.foreach(_.ready := false.B)
   outWires.foreach(_.ready := false.B)
   inWires(0).bits  := inRegs

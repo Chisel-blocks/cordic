@@ -28,7 +28,7 @@ class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
   val controlWord = io.in.bits.control.asSInt
 
   if (config.usePhaseAccum) {
-    when (io.in.valid) {
+    when (io.out.fire) {
       phaseAccum := phaseAccum + controlWord
     }
   }
