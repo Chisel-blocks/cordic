@@ -88,12 +88,14 @@ class CordicTop
     if      (preprocessorClass == "Basic")     Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations, repr))
     else if (preprocessorClass == "TrigFunc")  Module(new TrigFuncPreprocessor(mantissaBits, fractionBits, iterations, repr))
     else if (preprocessorClass == "UpConvert") Module(new UpConvertPreprocessor(mantissaBits, fractionBits, iterations, repr, config.upConvertConfig.get))
+    else if (preprocessorClass == "Generic")   Module(new GenericPreprocessor(mantissaBits, fractionBits, iterations, repr))
     else throw new RuntimeException(s"Illegal type for preprocessorClass: $preprocessorClass")
   }
   val postprocessor: CordicPostprocessor  = {
     if      (postprocessorClass == "Basic")     Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations, repr))
     else if (postprocessorClass == "TrigFunc")  Module(new TrigFuncPostprocessor(mantissaBits, fractionBits, iterations, repr))
     else if (postprocessorClass == "UpConvert") Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations, repr))
+    else if (postprocessorClass == "Generic")   Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations, repr))
     else throw new RuntimeException(s"Illegal type for postprocessorClass: $postprocessorClass")
   }
 
