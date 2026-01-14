@@ -21,7 +21,7 @@ class GenericPostprocessor(mantissaBits: Int, fractionBits: Int,
                          iterations: Int, repr: String)
   extends CordicPostprocessor(mantissaBits, fractionBits, iterations, repr) {
 
-  val control = io.in.bits.control.asTypeOf(CordicGenericControls())
+  val control = io.in.bits.control.asTypeOf(CordicGenericControls(mantissaBits+fractionBits))
 
   val scaledCordicOut = Wire(Vec(3, SInt(16.W)))
 

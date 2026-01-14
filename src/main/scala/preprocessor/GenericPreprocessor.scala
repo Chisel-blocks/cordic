@@ -40,7 +40,7 @@ class GenericPreprocessor(mantissaBits: Int, fractionBits: Int,
                            iterations: Int, repr: String)
   extends CordicPreprocessor(mantissaBits, fractionBits, iterations, repr) {
 
-  val control = io.in.bits.control.asTypeOf(CordicGenericControls())
+  val control = io.in.bits.control.asTypeOf(CordicGenericControls(mantissaBits+fractionBits))
 
   val rs1 = MuxCase(io.in.bits.rs1, Seq(
     (control.in_sel(0) === InputSel.Y) -> io.in.bits.rs2,
