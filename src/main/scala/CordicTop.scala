@@ -13,11 +13,11 @@ import scopt.OParser
 import java.io.File
 import cordic.config._
 
-trait hasCordicTopIO {
-  def io: CordicTopIO
+trait hasCordicTopIO[T <: Data] {
+  def io: CordicTopIO[T]
 }
 
-case class CordicTopIO(
+case class CordicTopIO[T <: Data](
   dataWidth: Int,
   useIn1: Boolean,
   useIn2: Boolean,
@@ -25,14 +25,14 @@ case class CordicTopIO(
   useOut1: Boolean,
   useOut2: Boolean,
   useOut3: Boolean,
-  useDout: Boolean
+  useDout: Boolean,
   ) extends Bundle {
 
   val in = Flipped(DecoupledIO(new Bundle {
     val rs1     = if (useIn1) Some(SInt(dataWidth.W)) else None
     val rs2     = if (useIn2) Some(SInt(dataWidth.W)) else None
     val rs3     = if (useIn3) Some(SInt(dataWidth.W)) else None
-    val control = UInt(32.W)
+    val control = UInt()
   }))
 
   val out = DecoupledIO(new Bundle {
@@ -46,7 +46,7 @@ case class CordicTopIO(
 
 }
 
-class CordicBlackBox(config: CordicConfig) extends ExtModule with hasCordicTopIO {
+class CordicBlackBox[T <: Data](config: CordicConfig, control_type: T = UInt(32.W)) extends ExtModule with hasCordicTopIO[T] {
   override val desiredName = "cordic"
   val io = IO(CordicTopIO(
     dataWidth = config.mantissaBits + config.fractionBits,
@@ -62,9 +62,9 @@ class CordicBlackBox(config: CordicConfig) extends ExtModule with hasCordicTopIO
   val reset = IO(Input(Bool()))
 }
 
-class CordicTop
-  (val config: CordicConfig)
-    extends Module with hasCordicTopIO {
+class CordicTop[T <: Data]
+  (val config: CordicConfig, control_type: T = UInt(32.W))
+    extends Module with hasCordicTopIO[T] {
 
   override def desiredName = "cordic"
 
