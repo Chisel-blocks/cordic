@@ -95,7 +95,7 @@ class CordicTop
     if      (postprocessorClass == "Basic")     Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations, repr))
     else if (postprocessorClass == "TrigFunc")  Module(new TrigFuncPostprocessor(mantissaBits, fractionBits, iterations, repr))
     else if (postprocessorClass == "UpConvert") Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations, repr))
-    else if (postprocessorClass == "Generic")   Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations, repr))
+    else if (postprocessorClass == "Generic")   Module(new GenericPostprocessor(mantissaBits, fractionBits, iterations, repr))
     else throw new RuntimeException(s"Illegal type for postprocessorClass: $postprocessorClass")
   }
 
