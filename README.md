@@ -85,4 +85,21 @@ This processor is meant for using CORDIC for up- or downconversion purpose. It i
 
 This processor requires the number representation `"pi"` as it needs to sample between -pi and +pi. Thus, this can be achieved by letting the counter overflow at +pi, wrapping to -pi. 
 
+### Generic
+This processor is meant to have flexible support for all kinds of operations calculable my the different modes of cordic. There are less fixed controls than in TrigFunc preprocessor, so decoding from operation to controls is expected to be done outside the module. This configuration is meant to support at least the following operations:
+- Sine
+- Cosine
+- Sine + Cosine (useful for mixing)
+- Arctan
+- Sinh
+- Cosh
+- ArcTanh
+- Exponential
+- Log
+- Square root
+
+The preprocessor has multiplexers to select which of the inputs is fed to which of the core inputs. Also, included are adders for initialization values (needed for log and sqrt), as well as a prerotation for circular modes.
+
+The postprocessor has multiplexers for outputs, as well as a scaler by 1/K or 1/Kh.
+
 

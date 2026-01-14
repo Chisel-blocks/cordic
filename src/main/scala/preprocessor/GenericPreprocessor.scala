@@ -43,6 +43,7 @@ class GenericPreprocessor(mantissaBits: Int, fractionBits: Int,
 
   val control = io.in.bits.control.asTypeOf(CordicGenericControls(mantissaBits+fractionBits))
 
+  // Input multiplexers
   val rs1_int = MuxCase(io.in.bits.rs1, Seq(
     (control.in_sel(0) === InputSel.Y) -> io.in.bits.rs2,
     (control.in_sel(0) === InputSel.Z) -> io.in.bits.rs3))
@@ -53,6 +54,7 @@ class GenericPreprocessor(mantissaBits: Int, fractionBits: Int,
     (control.in_sel(2) === InputSel.Y) -> io.in.bits.rs2,
     (control.in_sel(2) === InputSel.Z) -> io.in.bits.rs3))
 
+  // Input adders
   val rs1 = rs1_int + control.adder_ops(0)
   val rs2 = rs2_int + control.adder_ops(1)
   val rs3 = rs3_int + control.adder_ops(2)
@@ -60,6 +62,8 @@ class GenericPreprocessor(mantissaBits: Int, fractionBits: Int,
   val phase = rs3
 
   val isCircular = control.rot_type === CordicRotationType.CIRCULAR
+
+  // Prerotation for circular modes
   val largerThanPiOver2     = isCircular && (phase > consts.pPiOver2)
   val smallerThanNegPiOver2 = isCircular && (phase < consts.nPiOver2)
 

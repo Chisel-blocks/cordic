@@ -25,6 +25,7 @@ class GenericPostprocessor(mantissaBits: Int, fractionBits: Int,
 
   val scaledCordicOut = Wire(Vec(3, SInt(16.W)))
 
+  // Multiply by 1/K or 1/Kh to scale output
   for (i <- 0 until 3) {
     val cordicOut = {
       if (i == 0)      io.in.bits.cordic.x
@@ -42,9 +43,18 @@ class GenericPostprocessor(mantissaBits: Int, fractionBits: Int,
     scaledCordicOut(i) := mulResult >> 16
   }
 
-  io.out.bits.cordic.x := scaledCordicOut(0)
-  io.out.bits.cordic.y := scaledCordicOut(1)
-  io.out.bits.cordic.z := scaledCordicOut(2)
+  io.out.bits.cordic.x := MuxCase(scaledCordicOut(0), Seq(
+    (control.out_sel(0) === InputSel.Y) -> scaledCordicOut(1),
+    (control.out_sel(0) === InputSel.Z) -> scaledCordicOut(2)
+  ))
+  io.out.bits.cordic.y := MuxCase(scaledCordicOut(0), Seq(
+    (control.out_sel(1) === InputSel.Y) -> scaledCordicOut(1),
+    (control.out_sel(1) === InputSel.Z) -> scaledCordicOut(2)
+  ))
+  io.out.bits.cordic.z := MuxCase(scaledCordicOut(0), Seq(
+    (control.out_sel(2) === InputSel.Y) -> scaledCordicOut(1),
+    (control.out_sel(2) === InputSel.Z) -> scaledCordicOut(2)
+  ))
 
   io.out.valid := io.in.valid
   io.in.ready := io.out.ready
