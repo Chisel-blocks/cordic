@@ -38,7 +38,7 @@ class GenericPostprocessor(mantissaBits: Int, fractionBits: Int,
     } .elsewhen (control.out_mul(i) === OutputMultiplier.ONE_OVER_KH) {
       mulResult := cordicOut * consts.KhTimesPi
     } .otherwise {
-      mulResult := 0.S
+      mulResult := cordicOut << 15
     }
     scaledCordicOut(i) := mulResult >> 16
   }
