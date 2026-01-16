@@ -62,10 +62,11 @@ class GenericPreprocessor(mantissaBits: Int, fractionBits: Int,
   val phase = rs3
 
   val isCircular = control.rot_type === CordicRotationType.CIRCULAR
+  val isRotational = control.mode === CordicMode.ROTATION
 
   // Prerotation for circular modes
-  val largerThanPiOver2     = isCircular && (phase > consts.pPiOver2)
-  val smallerThanNegPiOver2 = isCircular && (phase < consts.nPiOver2)
+  val largerThanPiOver2     = isCircular && Mux(isRotational, (phase > consts.pPiOver2), rs1 < 0.S && rs2 < 0.S)
+  val smallerThanNegPiOver2 = isCircular && Mux(isRotational, (phase < consts.nPiOver2), rs1 < 0.S && rs2 >= 0.S)
 
   val rs1_neg = ~rs1_int + 1.S + control.adder_ops(0)
   val rs2_neg = ~rs2_int + 1.S + control.adder_ops(1)
