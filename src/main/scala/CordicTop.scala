@@ -63,7 +63,7 @@ class CordicBlackBox[T <: Data](config: CordicConfig, control_type: T = UInt(32.
 }
 
 class CordicTop[T <: Data]
-  (val config: CordicConfig, control_type: T = UInt(32.W))
+  (val config: CordicConfig)
     extends Module with hasCordicTopIO[T] {
 
   override def desiredName = "cordic"
