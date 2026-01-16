@@ -34,9 +34,9 @@ class GenericPostprocessor(mantissaBits: Int, fractionBits: Int,
     }
     val mulResult = Wire(SInt(32.W))
     when (control.out_mul(i) === OutputMultiplier.ONE_OVER_K) {
-      mulResult := cordicOut * consts.K
+      mulResult := cordicOut * consts.KTimesPi
     } .elsewhen (control.out_mul(i) === OutputMultiplier.ONE_OVER_KH) {
-      mulResult := cordicOut * consts.Kh
+      mulResult := cordicOut * consts.KhTimesPi
     } .otherwise {
       mulResult := 0.S
     }
