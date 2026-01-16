@@ -40,7 +40,7 @@ class GenericPostprocessor(mantissaBits: Int, fractionBits: Int,
     } .otherwise {
       mulResult := cordicOut << 15
     }
-    scaledCordicOut(i) := mulResult >> 16
+    scaledCordicOut(i) := mulResult >> 15
   }
 
   io.out.bits.cordic.x := MuxCase(scaledCordicOut(0), Seq(
