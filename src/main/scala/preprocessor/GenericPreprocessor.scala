@@ -31,11 +31,13 @@ case class CordicGenericControls(bitwidth: Int) extends Bundle {
 }
 
 /**
-  * Generic Preprocessor that performs prerotation for circular modes.
+  * Generic Preprocessor that has configurable input selectors, input adders,
+  * and prerotation for circular mode.
   *
   * @param mantissaBits
   * @param fractionBits
   * @param iterations
+  * @param repr
   */
 class GenericPreprocessor(mantissaBits: Int, fractionBits: Int,
                            iterations: Int, repr: String)

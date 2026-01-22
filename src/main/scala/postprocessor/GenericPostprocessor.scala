@@ -10,12 +10,13 @@ import chisel3.stage.{ChiselStage}
 import chisel3.stage.ChiselGeneratorAnnotation
 
 /**
-  * Basic postprocessor that simply moves in.cordic.x/y/z to out.cordic.x/y/z. 
-  * dOut is constant 0.
+  * Generic postprocessor which has multiplier for cordic gain compensation,
+  * and selector muxes for outputs.
   *
   * @param mantissaBits
   * @param fractionBits
   * @param iterations
+  * @param repr
   */
 class GenericPostprocessor(mantissaBits: Int, fractionBits: Int,
                          iterations: Int, repr: String)
