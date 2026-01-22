@@ -62,7 +62,7 @@ class CordicBlackBox(config: CordicConfig) extends ExtModule with hasCordicTopIO
   val reset = IO(Input(Bool()))
 }
 
-class CordicTop[T <: Data]
+class CordicTop
   (val config: CordicConfig)
     extends Module with hasCordicTopIO {
 
