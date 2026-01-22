@@ -13,11 +13,11 @@ import scopt.OParser
 import java.io.File
 import cordic.config._
 
-trait hasCordicTopIO[T <: Data] {
-  def io: CordicTopIO[T]
+trait hasCordicTopIO {
+  def io: CordicTopIO
 }
 
-case class CordicTopIO[T <: Data](
+case class CordicTopIO(
   dataWidth: Int,
   useIn1: Boolean,
   useIn2: Boolean,
@@ -46,7 +46,7 @@ case class CordicTopIO[T <: Data](
 
 }
 
-class CordicBlackBox[T <: Data](config: CordicConfig, control_type: T = UInt(32.W)) extends ExtModule with hasCordicTopIO[T] {
+class CordicBlackBox(config: CordicConfig) extends ExtModule with hasCordicTopIO {
   override val desiredName = "cordic"
   val io = IO(CordicTopIO(
     dataWidth = config.mantissaBits + config.fractionBits,
@@ -64,7 +64,7 @@ class CordicBlackBox[T <: Data](config: CordicConfig, control_type: T = UInt(32.
 
 class CordicTop[T <: Data]
   (val config: CordicConfig)
-    extends Module with hasCordicTopIO[T] {
+    extends Module with hasCordicTopIO {
 
   override def desiredName = "cordic"
 
