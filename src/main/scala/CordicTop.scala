@@ -25,14 +25,14 @@ case class CordicTopIO(
   useOut1: Boolean,
   useOut2: Boolean,
   useOut3: Boolean,
-  useDout: Boolean
+  useDout: Boolean,
   ) extends Bundle {
 
   val in = Flipped(DecoupledIO(new Bundle {
     val rs1     = if (useIn1) Some(SInt(dataWidth.W)) else None
     val rs2     = if (useIn2) Some(SInt(dataWidth.W)) else None
     val rs3     = if (useIn3) Some(SInt(dataWidth.W)) else None
-    val control = UInt(32.W)
+    val control = UInt()
   }))
 
   val out = DecoupledIO(new Bundle {
@@ -88,12 +88,14 @@ class CordicTop
     if      (preprocessorClass == "Basic")     Module(new BasicPreprocessor(mantissaBits, fractionBits, iterations, repr))
     else if (preprocessorClass == "TrigFunc")  Module(new TrigFuncPreprocessor(mantissaBits, fractionBits, iterations, repr))
     else if (preprocessorClass == "UpConvert") Module(new UpConvertPreprocessor(mantissaBits, fractionBits, iterations, repr, config.upConvertConfig.get))
+    else if (preprocessorClass == "Generic")   Module(new GenericPreprocessor(mantissaBits, fractionBits, iterations, repr))
     else throw new RuntimeException(s"Illegal type for preprocessorClass: $preprocessorClass")
   }
   val postprocessor: CordicPostprocessor  = {
     if      (postprocessorClass == "Basic")     Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations, repr))
     else if (postprocessorClass == "TrigFunc")  Module(new TrigFuncPostprocessor(mantissaBits, fractionBits, iterations, repr))
     else if (postprocessorClass == "UpConvert") Module(new BasicPostprocessor(mantissaBits, fractionBits, iterations, repr))
+    else if (postprocessorClass == "Generic")   Module(new GenericPostprocessor(mantissaBits, fractionBits, iterations, repr))
     else throw new RuntimeException(s"Illegal type for postprocessorClass: $postprocessorClass")
   }
 

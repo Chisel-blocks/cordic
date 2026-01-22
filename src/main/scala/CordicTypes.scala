@@ -34,7 +34,7 @@ case class CordicCoreControl() extends Bundle {
   val mode = CordicMode()
 
   /** Custom control bits to transmit info between pre- and postprocessor */
-  val custom = UInt(32.W)
+  val custom = UInt()
 }
 
 object CordicMethods {
@@ -95,6 +95,22 @@ case class CordicConstants(mantissaBits: Int, fractionBits: Int, iterations: Int
     fractionBits,
     repr
   )
+
+  val KTimesPi = 
+    CordicMethods.toFixedPoint(
+      math.Pi / CordicMethods.calcK(iterations, CordicRotationType.CIRCULAR),
+      mantissaBits,
+      fractionBits,
+      repr
+    )
+
+  val KhTimesPi = 
+    CordicMethods.toFixedPoint(
+      math.Pi / CordicMethods.calcK(iterations, CordicRotationType.HYPERBOLIC),
+      mantissaBits,
+      fractionBits,
+      repr
+    )
 
   val pPi      = CordicMethods.toFixedPoint(math.Pi, mantissaBits, fractionBits, repr)
   val pPiOver2 = CordicMethods.toFixedPoint(math.Pi / 2, mantissaBits, fractionBits, repr)
