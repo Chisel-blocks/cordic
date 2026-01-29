@@ -24,7 +24,9 @@ class GenericPostprocessor(mantissaBits: Int, fractionBits: Int,
 
   val control = io.in.bits.control.asTypeOf(CordicGenericControls(mantissaBits+fractionBits))
 
-  val scaledCordicOut = Wire(Vec(3, SInt(16.W)))
+  val calc_width = mantissaBits + fractionBits
+
+  val scaledCordicOut = Wire(Vec(3, SInt(calc_width.W)))
 
   // Multiply by 1/K or 1/Kh to scale output
   for (i <- 0 until 3) {
@@ -33,15 +35,15 @@ class GenericPostprocessor(mantissaBits: Int, fractionBits: Int,
       else if (i == 1) io.in.bits.cordic.y
       else             io.in.bits.cordic.z
     }
-    val mulResult = Wire(SInt(32.W))
+    val mulResult = Wire(SInt((calc_width*2).W))
     when (control.out_mul(i) === OutputMultiplier.ONE_OVER_K) {
       mulResult := cordicOut * consts.KTimesPi
     } .elsewhen (control.out_mul(i) === OutputMultiplier.ONE_OVER_KH) {
       mulResult := cordicOut * consts.KhTimesPi
     } .otherwise {
-      mulResult := cordicOut << 15
+      mulResult := cordicOut << (calc_width - 1)
     }
-    scaledCordicOut(i) := mulResult >> 15
+    scaledCordicOut(i) := mulResult >> (calc_width - 1)
   }
 
   io.out.bits.cordic.x := MuxCase(scaledCordicOut(0), Seq(
