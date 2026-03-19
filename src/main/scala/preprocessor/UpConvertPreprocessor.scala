@@ -34,9 +34,15 @@ class UpConvertPreprocessor(mantissaBits: Int, fractionBits: Int,
   }
 
   // Use MSB bits for phase value
-  val phase = {
-    if (config.usePhaseAccum) phaseAccum.head(mantissaBits + fractionBits).asSInt
-    else io.in.bits.rs3
+  val phase: SInt = if (config.usePhaseAccum) {
+    val widthDiff = config.phaseAccumWidth - (mantissaBits + fractionBits)
+    if (widthDiff >= 0) {
+      phaseAccum.head(mantissaBits + fractionBits).asSInt
+    } else {
+      (phaseAccum << (-widthDiff)).asSInt
+    }
+  } else {
+    io.in.bits.rs3
   }
 
   // TODO: check if it should be >= or <= for efficient hw
