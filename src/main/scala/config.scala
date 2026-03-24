@@ -28,6 +28,7 @@ case class CordicConfig(
   usedInputs: List[Int] = List(1, 2, 3),
   usedOutputs: List[Int] = List(1, 2, 3),
   useDout: Boolean = true,
+  loopUnrolling: Int = 1,
   upConvertConfig: Option[UpConvertConfig]
 )
 

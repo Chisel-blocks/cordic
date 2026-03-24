@@ -32,6 +32,7 @@ case class CordicCoreIO(dataWidth: Int) extends Bundle {
   * @param enableHyperbolic
   * @param enableRotational
   * @param enableVectoring
+  * @param loopUnrolling How many cordic stages per pipeline stage
   */
 class CordicCore(mantissaBits: Int,
                  fractionBits: Int,
@@ -40,7 +41,8 @@ class CordicCore(mantissaBits: Int,
                  enableCircular: Boolean,
                  enableHyperbolic: Boolean,
                  enableRotational: Boolean,
-                 enableVectoring: Boolean
+                 enableVectoring: Boolean,
+                 loopUnrolling: Int,
                  ) extends Module {
   val io = IO(CordicCoreIO(dataWidth = mantissaBits + fractionBits))
 
@@ -67,8 +69,9 @@ class CordicCore(mantissaBits: Int,
 
   val inWires      = Seq.fill(totalIterations)(Wire(chiselTypeOf(io.in)))
   val outWires     = Seq.fill(totalIterations)(Wire(chiselTypeOf(io.in)))
-  val pipelineRegs = Seq.tabulate(totalIterations)(i => RegEnable(outWires(i).bits, io.out.ready))
-  val validRegs    = Seq.tabulate(totalIterations)(i => RegEnable(outWires(i).valid, false.B, io.out.ready))
+
+  val pipelineRegs = Seq.fill(totalIterations)(Reg(chiselTypeOf(outWires(0).bits)))
+  val validRegs    = Seq.fill(totalIterations)(RegInit(false.B))
 
   inWires.foreach(_.ready := false.B)
   outWires.foreach(_.ready := false.B)
@@ -132,10 +135,6 @@ class CordicCore(mantissaBits: Int,
       m := false.B
     }
 
-    if (i > 0) {
-      inWires(i).bits  := pipelineRegs(i - 1)
-      inWires(i).valid := validRegs(i - 1)
-    }
 
     // Keep track of repeat iterations required for hyperbolic mode
     if (CordicConstants.hyperbolicRepeatIndices.contains(i - repeats) && !repeat && enableHyperbolic) {
@@ -188,6 +187,23 @@ class CordicCore(mantissaBits: Int,
       shiftIdx += 1
       lutIdx += 1
     }
+
+    when (io.out.ready) {
+      pipelineRegs(i) := outWires(i).bits
+      validRegs(i) := outWires(i).valid
+    }
+
+    if ((i % loopUnrolling == 0) && (i != (totalIterations - 1))) {
+      if (i != (totalIterations - 1)) {
+        inWires(i + 1).bits := pipelineRegs(i)
+        inWires(i + 1).valid := validRegs(i)
+      }
+    } else {
+      if (i != (totalIterations - 1)) {
+        inWires(i + 1).bits := outWires(i).bits
+        inWires(i + 1).valid := outWires(i).valid
+      }
+    }
   }
 
   io.out.bits  := pipelineRegs(totalIterations - 1)
@@ -201,7 +217,7 @@ object CordicCore extends App {
   (new ChiselStage).execute(
     { Array() ++ args },
     Seq(ChiselGeneratorAnnotation(() => new CordicCore(4, 12, 16,
-                                                       "fixed-point", true, true, true, true)))
+                                                       "fixed-point", true, true, true, true, 1)))
   )
 
 }

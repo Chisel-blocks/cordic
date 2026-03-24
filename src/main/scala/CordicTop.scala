@@ -106,7 +106,8 @@ class CordicTop
                                          config.enableCircular,
                                          config.enableHyperbolic,
                                          config.enableRotational,
-                                         config.enableVectoring))
+                                         config.enableVectoring,
+                                         config.loopUnrolling))
 
   val inRegs      = Module(new Queue(chiselTypeOf(io.in.bits), 2))
   val outRegs     = Module(new Queue(chiselTypeOf(io.out.bits), 2))

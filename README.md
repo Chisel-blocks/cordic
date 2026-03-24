@@ -52,6 +52,10 @@ You can omit unused inputs and outputs from the CORDIC. For example, the upconve
 
 For example: `used-inputs: [1, 2]`.
 
+### Loop unrolling
+You can merge CORDIC stages to one pipeline stage to save area in applications where highest clock frequency is not needed
+- `loop-unrolling` - How many cordic stages in one pipeline stage (default: `1`)
+
 ## Available pre- and postprocessors
 
 You can create your own under preprocessor/ and postprocessor/. Then, you need to add a checker in CordicTop.scala that uses your own pre- and postprocessor with a suitable input parameter.
